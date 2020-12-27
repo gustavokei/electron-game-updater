@@ -1,0 +1,64 @@
+{
+  "name": "gc-launcher",
+  "productName": "Grand Chase Sandbox",
+  "author": "Gustavo Kei Amemiya",
+  "description": "Electron GC Launcher",
+  "version": "0.0.134",
+  "fileAssociations": {
+    "description": "Electron GC Launcher"
+  },
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-webpack dev --dev",
+    "compile": "electron-webpack",
+    "dist": "npm run compile && node build/script-prep.js && electron-builder --publish always && node build/script-deploy.js",
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
+    "build": "npm run compile && electron-builder"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "electron-dl": "^3.0.0",
+    "electron-updater": "^4.3.1",
+    "immutable": "^4.0.0-rc.12",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-hot-loader": "^4.12.21",
+    "react-iframe": "^1.8.0",
+    "source-map-support": "^0.5.19"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/preset-react": "^7.10.1",
+    "electron": "9.0.3",
+    "electron-builder": "22.7.0",
+    "electron-devtools-installer": "^3.0.0",
+    "electron-webpack": "^2.8.2",
+    "electron-webpack-eslint": "^6.0.0",
+    "eslint-plugin-react": "^7.20.0",
+    "github-remove-all-releases": "^1.0.1",
+    "shelljs": "^0.8.4",
+    "webpack": "~4.43.0"
+  },
+  "build": {
+    "win": {
+      "target": "nsis-web",
+      "requestedExecutionLevel": "highestAvailable",
+      "icon": "build/icon.ico",
+      "publish": [
+        {
+          "provider": "github",
+          "repo": "gc-launcher-public",
+          "owner": "gustavokei",
+          "private": false,
+          "releaseType": "release"
+        }
+      ]
+    },
+    "nsisWeb": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true
+    }
+  }
+}

@@ -1,0 +1,187 @@
+#preload {
+  display: none;
+}
+
+body {
+  background: url('~@/assets/background.jpg');
+  background-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.draggable {
+  width: 585px;
+  height: 170px;
+  -webkit-app-region: drag;
+}
+
+#btnClose {
+  background: url('~@/assets/close-default.jpg');
+  width: 15px;
+  height: 15px;
+  border: none;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+
+#btnClose:hover {
+  background: url('~@/assets/close-hover.jpg');
+}
+
+#btnClose:focus {
+  outline: none;
+}
+
+#btnClose:active {
+  background: url('~@/assets/close-down.jpg');
+}
+
+#btnStart {
+  background: url('~@/assets/start-default.jpg');
+  width: 104px;
+  height: 74px;
+  border: none;
+  position: absolute;
+  right: 13px;
+  bottom: 8px;
+}
+
+#btnStartDisabled {
+  background: url('~@/assets/start-disabled.jpg');
+  width: 104px;
+  height: 74px;
+  border: none;
+  position: absolute;
+  right: 13px;
+  bottom: 8px;
+}
+
+#btnStart:hover {
+  background: url('~@/assets/start-hover.jpg');
+}
+
+#btnStart:focus,
+#btnStartDisabled:focus {
+  outline: none;
+}
+
+#btnStart:active {
+  background: url('~@/assets/start-down.jpg');
+}
+
+#iframe {
+  position: absolute;
+  left: 16px;
+  top: 171px;
+  border: none;
+  width: 578px;
+  height: 310px;
+}
+
+.text {
+  display: block;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  position: absolute;
+  text-align: center;
+  pointer-events: none;
+}
+
+#txtFile {
+  bottom: 35px;
+  left: 35px;
+}
+
+#txtTotal {
+  bottom: 14px;
+  left: 35px;
+}
+
+#txtStatus {
+  bottom: 54px;
+  left: 99px;
+  font-size: 10.6px;
+  width: 303px;
+  height: 20px;
+  line-height: 20px;
+}
+
+#txtProgress {
+  font-size: 10.6px;
+  width: 401px;
+  height: 20px;
+  line-height: 20px;
+  bottom: 14px;
+  left: 78px;
+  z-index: 1;
+}
+
+#fileProgress {
+  height: 7px;
+  width: 400px;
+  display: flex;
+  position: absolute;
+  bottom: 40px;
+  left: 80px;
+}
+
+#fileLeft {
+  background: url('~@/assets/topbar-left.jpg');
+  height: 7px;
+  width: 4px;
+}
+
+#fileMid {
+  height: 7px;
+  width: 393px;
+  display: flex;
+}
+
+#fileBar {
+  background: url('~@/assets/topbar-mid.jpg');
+  height: 100%;
+  width: 0%;
+}
+
+#fileMid:after {
+  content: '';
+  background: url('~@/assets/topbar-right.jpg');
+  height: 100%;
+  width: 4px;
+}
+
+#totalProgress {
+  height: 18px;
+  width: 400px;
+  display: flex;
+  position: absolute;
+  bottom: 15px;
+  left: 80px;
+}
+
+#totalLeft {
+  background: url('~@/assets/totalbar-left.jpg');
+  height: 18px;
+  width: 4px;
+}
+
+#totalMid {
+  height: 18px;
+  width: 393px;
+  display: flex;
+}
+
+#totalBar {
+  background: url('~@/assets/totalbar-mid.jpg');
+  height: 100%;
+  width: 0%;
+}
+
+#totalMid:after {
+  content: '';
+  background: url('~@/assets/totalbar-right.jpg');
+  height: 100%;
+  width: 4px;
+}
