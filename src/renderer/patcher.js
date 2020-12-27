@@ -1,6 +1,5 @@
 module.exports = {
   patcher: () => {
-    require('dotenv').config();
     const { ipcRenderer } = require('electron');
     const filePath = ipcRenderer.sendSync('get-file-path', '');
     const remote = require('electron').remote;
@@ -51,12 +50,11 @@ module.exports = {
     // 'getUpdate' Function
     //
     const getUpdate = async () => {
-      let url = process.env.LAUNCHER_JSON_URL;
+      let url = 'https://storage.googleapis.com/gc-client/gc-launcher.json?v=2';
 
       if (isDev()) {
         url =
-          'https://cors-anywhere.herokuapp.com/' +
-          process.env.LAUNCHER_JSON_URL;
+          'https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/gc-client/gc-launcher.json?v=2';
       }
 
       let response = await fetch(url, {
