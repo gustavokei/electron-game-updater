@@ -238,7 +238,7 @@ const runPatcher = () => {
 
   ipcMain.on("get-file-path", (event, arg) => {
     if (env.isDevelopment) {
-      console.log(arg);
+      // console.log(arg);
       event.returnValue = app.getPath("userData");
     } else {
       event.returnValue = app
@@ -249,7 +249,7 @@ const runPatcher = () => {
 
   const { download } = require("electron-dl");
   ipcMain.on("download", (event, data) => {
-    console.log(data);
+    // console.log(data);
     data.options.onProgress = (status) =>
       mainWindow.send("download progress", status);
     download(mainWindow, data.url, data.options)

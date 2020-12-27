@@ -204,7 +204,7 @@ module.exports = {
           document
             .getElementById("fileBar")
             .style.setProperty("width", fileProgress + "%");
-          console.log(status);
+          // console.log(status);
         });
 
         ipcRenderer.on("download complete", () => {
