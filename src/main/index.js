@@ -45,7 +45,7 @@ const checkDriver = () => {
     `netsh interface show interface "ZeroTier One [${zeroTierNetworkId}]"`,
     (error, stdout) => {
       if (stdout.includes('Connected')) {
-        runLoadScreen();
+        runPatcher();
       } else {
         enableZeroTier();
       }
@@ -53,10 +53,10 @@ const checkDriver = () => {
   );
 };
 
-const runLoadScreen = () => {
+const runSelfUpdate = () => {
   // Slowing down here
   if (env.isDevelopment) {
-    runApp();
+    runPatcher();
   } else {
     autoUpdater.checkForUpdatesAndNotify();
   }
@@ -102,7 +102,7 @@ const enableZeroTier = () => {
     `netsh interface set interface "ZeroTier One [${zeroTierNetworkId}]" enable`,
     (error, stdout, stderr) => {
       if (error == null) {
-        runLoadScreen();
+        runPatcher();
       } else {
         showErrorAndExit(stderr);
       }
@@ -222,7 +222,7 @@ const createMainWindow = () => {
   return window;
 };
 
-const runApp = () => {
+const runPatcher = () => {
   mainWindow = createMainWindow();
   loadingScreen.close();
 
@@ -289,7 +289,7 @@ autoUpdater.on('update-available', () => {
 
 autoUpdater.on('update-not-available', () => {
   sendStatusToWindow('Atualização indisponível');
-  runApp();
+  checkDependencies();
 });
 
 autoUpdater.on('download-progress', (progressObj) => {
@@ -305,7 +305,7 @@ autoUpdater.on('update-downloaded', () => {
 // create main BrowserWindow when electron is ready
 app.on('ready', () => {
   createLoadingScreen();
-  checkDependencies();
+  runSelfUpdate();
 });
 
 if (module.hot) {
