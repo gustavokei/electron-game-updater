@@ -3,7 +3,6 @@ module.exports = {
     const { ipcRenderer } = require('electron');
     const filePath = ipcRenderer.sendSync('get-file-path', '');
     const remote = require('electron').remote;
-    const window = remote.getCurrentWindow();
 
     //
     // Check if isDev
