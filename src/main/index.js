@@ -7,7 +7,7 @@ import { format as formatUrl } from 'url';
 //
 // Chocolatey & ZeroTier
 //
-const zeroTierNetworkId = process.env.GH_OWNER;
+const zeroTierNetworkId = '8850338390545e28';
 let { exec } = require('child_process');
 
 const checkDependencies = () => {
