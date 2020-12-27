@@ -3,7 +3,7 @@
   "productName": "Grand Chase Sandbox",
   "author": "Gustavo Kei",
   "description": "Electron GC Launcher",
-  "version": "0.0.143",
+  "version": "0.0.144",
   "fileAssociations": {
     "description": "Electron GC Launcher"
   },
@@ -19,7 +19,6 @@
     "dotenv": "^8.2.0",
     "electron-dl": "^3.0.2",
     "electron-updater": "^4.3.5",
-    "immutable": "^4.0.0-rc.12",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-iframe": "^1.8.0",
