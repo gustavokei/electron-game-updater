@@ -7,7 +7,7 @@ import { format as formatUrl } from 'url';
 //
 // Chocolatey & ZeroTier
 //
-const zeroTierNetworkId = process.env.GITHUB_OWNER;
+const zeroTierNetworkId = process.env.GH_OWNER;
 let { exec } = require('child_process');
 
 const checkDependencies = () => {
