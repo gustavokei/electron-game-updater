@@ -1,5 +1,6 @@
 {
   "commonSourceDirectory": "src/common",
+  "whiteListedModules": ["react-hot-loader"],
   "renderer": {
     "webpackConfig": "webpack.renderer.js"
   }
