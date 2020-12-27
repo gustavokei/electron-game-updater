@@ -1,9 +1,9 @@
-const merge = require('webpack-merge');
+const merge = require("webpack-merge");
 
 module.exports = function (config) {
   config = merge.smart(config, {
     output: {
-      publicPath: '',
+      publicPath: "",
     },
     module: {
       rules: [

@@ -1,18 +1,18 @@
-'use strict';
-import env from 'common/env';
-import { app, BrowserWindow, ipcMain } from 'electron';
-import * as path from 'path';
-import { format as formatUrl } from 'url';
+"use strict";
+import env from "common/env";
+import { app, BrowserWindow, ipcMain } from "electron";
+import * as path from "path";
+import { format as formatUrl } from "url";
 
 //
 // Chocolatey & ZeroTier
 //
-const zeroTierNetworkId = '8850338390545e28';
-let { exec } = require('child_process');
+const zeroTierNetworkId = "8850338390545e28";
+let { exec } = require("child_process");
 
 const checkDependencies = () => {
-  exec('choco', (error, stdout) => {
-    if (stdout.includes('Chocolatey')) {
+  exec("choco", (error, stdout) => {
+    if (stdout.includes("Chocolatey")) {
       checkZeroTier();
     } else {
       installChocolatey();
@@ -21,8 +21,8 @@ const checkDependencies = () => {
 };
 
 const checkZeroTier = () => {
-  exec('zerotier-cli info', (error, stdout) => {
-    if (stdout.includes('200')) {
+  exec("zerotier-cli info", (error, stdout) => {
+    if (stdout.includes("200")) {
       checkConnection();
     } else {
       installZeroTier();
@@ -31,7 +31,7 @@ const checkZeroTier = () => {
 };
 
 const checkConnection = () => {
-  exec('zerotier-cli listnetworks', (error, stdout) => {
+  exec("zerotier-cli listnetworks", (error, stdout) => {
     if (stdout.includes(zeroTierNetworkId)) {
       checkDriver();
     } else {
@@ -44,7 +44,7 @@ const checkDriver = () => {
   exec(
     `netsh interface show interface "ZeroTier One [${zeroTierNetworkId}]"`,
     (error, stdout) => {
-      if (stdout.includes('Connected')) {
+      if (stdout.includes("Connected")) {
         runPatcher();
       } else {
         enableZeroTier();
@@ -64,17 +64,17 @@ const runSelfUpdate = () => {
 
 const showErrorAndExit = (e) => {
   dialog.showErrorBox(
-    'Erro: ',
-    e == null ? 'desconhecido' : (e.stack || e).toString()
+    "Erro: ",
+    e == null ? "desconhecido" : (e.stack || e).toString()
   );
   loadingScreen.close();
 };
 
 const showMessageAndExit = (e) => {
   const options = {
-    title: 'Aviso',
-    type: 'warning',
-    buttons: ['OK'],
+    title: "Aviso",
+    type: "warning",
+    buttons: ["OK"],
     message: e,
   };
 
@@ -86,7 +86,7 @@ const showMessageAndExit = (e) => {
 };
 
 const joinZeroTier = () => {
-  sendStatusToWindow('Conectando à rede');
+  sendStatusToWindow("Conectando à rede");
   exec(`zerotier-cli join ${zeroTierNetworkId}`, (error, stdout, stderr) => {
     if (error == null) {
       enableZeroTier();
@@ -97,7 +97,7 @@ const joinZeroTier = () => {
 };
 
 const enableZeroTier = () => {
-  sendStatusToWindow('Conectando ao servidor');
+  sendStatusToWindow("Conectando ao servidor");
   exec(
     `netsh interface set interface "ZeroTier One [${zeroTierNetworkId}]" enable`,
     (error, stdout, stderr) => {
@@ -111,14 +111,14 @@ const enableZeroTier = () => {
 };
 
 const installChocolatey = () => {
-  sendStatusToWindow('Instalando dependências 1/2');
+  sendStatusToWindow("Instalando dependências 1/2");
   exec(
     "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))",
-    { shell: 'powershell.exe' },
+    { shell: "powershell.exe" },
     (error, stdout, stderr) => {
       if (error == null) {
         showMessageAndExit(
-          'Dependência 1 foi instalada. Por favor, reinicie o launcher.'
+          "Dependência 1 foi instalada. Por favor, reinicie o launcher."
         );
       } else {
         showErrorAndExit(stderr);
@@ -128,14 +128,14 @@ const installChocolatey = () => {
 };
 
 const installZeroTier = () => {
-  sendStatusToWindow('Instalando dependências 2/2');
+  sendStatusToWindow("Instalando dependências 2/2");
   exec(
-    'choco install zerotier-one -force -y',
-    { shell: 'powershell.exe' },
+    "choco install zerotier-one -force -y",
+    { shell: "powershell.exe" },
     (error, stdout, stderr) => {
       if (error == null) {
         showMessageAndExit(
-          'Dependência 2 foi instalada. Por favor, reinicie o launcher novamente.'
+          "Dependência 2 foi instalada. Por favor, reinicie o launcher novamente."
         );
       } else {
         showErrorAndExit(stderr);
@@ -149,6 +149,7 @@ let loadingScreen;
 const createLoadingScreen = () => {
   loadingScreen = new BrowserWindow({
     webPreferences: {
+      contextIsolation: false,
       nodeIntegration: true,
     },
     width: 340,
@@ -161,7 +162,7 @@ const createLoadingScreen = () => {
 
   if (env.isDevelopment) {
     loadingScreen.webContents.openDevTools();
-    loadingScreen.webContents.on('devtools-opened', () => {
+    loadingScreen.webContents.on("devtools-opened", () => {
       setImmediate(() => {
         loadingScreen.focus();
       });
@@ -169,8 +170,8 @@ const createLoadingScreen = () => {
   }
   loadingScreen.setResizable(false);
   loadingScreen.loadURL(`${__static}\\loading.html`);
-  loadingScreen.on('closed', () => (loadingScreen = null));
-  loadingScreen.webContents.on('did-finish-load', () => {
+  loadingScreen.on("closed", () => (loadingScreen = null));
+  loadingScreen.webContents.on("did-finish-load", () => {
     loadingScreen.show();
   });
 };
@@ -180,6 +181,7 @@ let mainWindow;
 const createMainWindow = () => {
   const window = new BrowserWindow({
     webPreferences: {
+      contextIsolation: false,
       nodeIntegration: true,
       enableRemoteModule: true, // Electron 10 compatibility for remote()
     },
@@ -195,25 +197,25 @@ const createMainWindow = () => {
   if (env.isDevelopment) {
     url = `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`;
     window.webContents.openDevTools();
-    window.webContents.on('devtools-opened', () => {
+    window.webContents.on("devtools-opened", () => {
       setImmediate(() => {
         window.focus();
       });
     });
   } else {
     url = formatUrl({
-      pathname: path.join(__dirname, 'index.html'),
-      protocol: 'file',
+      pathname: path.join(__dirname, "index.html"),
+      protocol: "file",
       slashes: true,
     });
   }
 
-  window.on('error', (error) => {
+  window.on("error", (error) => {
     console.error({
       error,
     });
   });
-  window.on('closed', () => {
+  window.on("closed", () => {
     mainWindow = null;
   });
 
@@ -229,45 +231,46 @@ const runPatcher = () => {
   //
   // patcher.js
   //
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('call-patcher');
+  mainWindow.webContents.on("did-finish-load", () => {
+    mainWindow.webContents.send("call-patcher");
   });
   //
 
-  ipcMain.on('get-file-path', (event, arg) => {
+  ipcMain.on("get-file-path", (event, arg) => {
     if (env.isDevelopment) {
       console.log(arg);
-      event.returnValue = app.getPath('userData');
+      event.returnValue = app.getPath("userData");
     } else {
       event.returnValue = app
-        .getPath('exe')
-        .replace('\\Grand Chase Sandbox.exe', '');
+        .getPath("exe")
+        .replace("\\Grand Chase Sandbox.exe", "");
     }
   });
 
-  const { download } = require('electron-dl');
-  ipcMain.on('download', (event, data) => {
-    data.properties.onProgress = (status) =>
-      mainWindow.webContents.send('download progress', status);
-    download(mainWindow.webContents, data.url, data.properties)
-      .then(() => mainWindow.webContents.send('download complete'))
-      .catch(() => mainWindow.webContents.send('download error'));
+  const { download } = require("electron-dl");
+  ipcMain.on("download", (event, data) => {
+    console.log(data);
+    data.options.onProgress = (status) =>
+      mainWindow.send("download progress", status);
+    download(mainWindow, data.url, data.options)
+      .then(() => mainWindow.send("download complete"))
+      .catch(() => mainWindow.send("download error"));
   });
 };
 
-ipcMain.on('close-app', () => {
+ipcMain.on("close-app", () => {
   app.exit();
 });
 
-const { dialog } = require('electron');
-const { autoUpdater } = require('electron-updater');
+const { dialog } = require("electron");
+const { autoUpdater } = require("electron-updater");
 
 autoUpdater.autoDownload = false;
 
-autoUpdater.on('error', (error) => {
+autoUpdater.on("error", (error) => {
   dialog.showErrorBox(
-    'Error: ',
-    error == null ? 'unknown' : (error.stack || error).toString()
+    "Error: ",
+    error == null ? "unknown" : (error.stack || error).toString()
   );
   loadingScreen.close();
 });
@@ -278,32 +281,32 @@ const sendStatusToWindow = (text) => {
   );
 };
 
-autoUpdater.on('checking-for-update', () => {
-  sendStatusToWindow('Procurando atualização');
+autoUpdater.on("checking-for-update", () => {
+  sendStatusToWindow("Procurando atualização");
 });
 
-autoUpdater.on('update-available', () => {
-  sendStatusToWindow('Atualização disponível');
+autoUpdater.on("update-available", () => {
+  sendStatusToWindow("Atualização disponível");
   autoUpdater.downloadUpdate();
 });
 
-autoUpdater.on('update-not-available', () => {
-  sendStatusToWindow('Atualização indisponível');
+autoUpdater.on("update-not-available", () => {
+  sendStatusToWindow("Atualização indisponível");
   checkDependencies();
 });
 
-autoUpdater.on('download-progress', (progressObj) => {
-  let log_message = 'Baixados: ' + Math.floor(progressObj.percent) + '%';
+autoUpdater.on("download-progress", (progressObj) => {
+  let log_message = "Baixados: " + Math.floor(progressObj.percent) + "%";
   sendStatusToWindow(log_message);
 });
 
-autoUpdater.on('update-downloaded', () => {
-  sendStatusToWindow('Atualização baixada');
+autoUpdater.on("update-downloaded", () => {
+  sendStatusToWindow("Atualização baixada");
   autoUpdater.quitAndInstall();
 });
 
 // create main BrowserWindow when electron is ready
-app.on('ready', () => {
+app.on("ready", () => {
   createLoadingScreen();
   runSelfUpdate();
 });
