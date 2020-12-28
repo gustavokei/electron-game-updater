@@ -159,7 +159,6 @@ const createLoaderWindow = () => {
     resizable: false,
   });
 
-  let url;
   if (env.isDevelopment) {
     loaderWindow.webContents.openDevTools();
     loaderWindow.webContents.on("devtools-opened", () => {
@@ -172,7 +171,7 @@ const createLoaderWindow = () => {
   loaderWindow.loadURL(
     env.isDevelopment
       ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}#loader`
-      : `file://${path.join(__dirname, "../build/index.html#/loader")}`
+      : `file://${path.join(__dirname, "../app/index.html#/loader")}`
   );
   loaderWindow.on("closed", () => (loaderWindow = null));
   loaderWindow.webContents.on("did-finish-load", () => {
