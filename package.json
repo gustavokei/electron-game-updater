@@ -3,7 +3,7 @@
   "productName": "Grand Chase Sandbox",
   "author": "Gustavo Kei",
   "description": "Electron GC Launcher",
-  "version": "0.0.150",
+  "version": "0.0.151",
   "fileAssociations": {
     "description": "Electron GC Launcher"
   },
@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "electron-webpack dev --dev",
     "compile": "electron-webpack",
-    "dist": "npm run compile && node build/script-prep.js && electron-builder --publish always && node build/script-deploy.js",
+    "dist": "node build/script-prep.js && npm run compile && electron-builder --publish always && node build/script-deploy.js",
     "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
     "build": "npm run compile && electron-builder"
   },
