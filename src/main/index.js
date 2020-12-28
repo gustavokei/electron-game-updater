@@ -55,7 +55,7 @@ const checkDriver = () => {
 
 const runSelfUpdate = () => {
   if (env.isDevelopment) {
-    runPatcher();
+    // runPatcher();
   } else {
     autoUpdater.checkForUpdatesAndNotify();
   }
@@ -171,7 +171,7 @@ const createLoaderWindow = () => {
   loaderWindow.loadURL(
     env.isDevelopment
       ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}#loader`
-      : `file://${path.join(__dirname, "../app/index.html#/loader")}`
+      : `file://${__dirname}/app/index.html#/loader`
   );
   loaderWindow.on("closed", () => (loaderWindow = null));
   loaderWindow.webContents.on("did-finish-load", () => {
