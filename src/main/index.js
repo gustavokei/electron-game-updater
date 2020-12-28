@@ -172,7 +172,11 @@ const createLoaderWindow = () => {
   loaderWindow.loadURL(
     env.isDevelopment
       ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}#loader`
-      : `file://${path.join(__dirname, "../build/index.html#loader")}`
+      : formatUrl({
+          pathname: path.join(__dirname, "index.html#loader"),
+          protocol: "file",
+          slashes: true,
+        })
   );
   loaderWindow.on("closed", () => (loaderWindow = null));
   loaderWindow.webContents.on("did-finish-load", () => {
