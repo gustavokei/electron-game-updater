@@ -48,7 +48,7 @@
       "publish": [
         {
           "provider": "github",
-          "repo": "gc-launcher-public",
+          "repo": "gc-launcher",
           "owner": "gustavokei",
           "private": false,
           "releaseType": "release"
