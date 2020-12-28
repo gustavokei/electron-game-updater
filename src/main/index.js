@@ -54,7 +54,6 @@ const checkDriver = () => {
 };
 
 const runSelfUpdate = () => {
-  // Slowing down here
   if (env.isDevelopment) {
     runPatcher();
   } else {
@@ -67,7 +66,7 @@ const showErrorAndExit = (e) => {
     "Erro: ",
     e == null ? "desconhecido" : (e.stack || e).toString()
   );
-  loadingScreen.close();
+  loaderWindow.close();
 };
 
 const showMessageAndExit = (e) => {
@@ -78,7 +77,7 @@ const showMessageAndExit = (e) => {
     message: e,
   };
 
-  dialog.showMessageBox(loadingScreen, options).then((result) => {
+  dialog.showMessageBox(loaderWindow, options).then((result) => {
     if (result.response === 0) {
       app.exit();
     }
@@ -145,9 +144,9 @@ const installZeroTier = () => {
 };
 //
 
-let loadingScreen;
-const createLoadingScreen = () => {
-  loadingScreen = new BrowserWindow({
+let loaderWindow;
+const createLoaderWindow = () => {
+  loaderWindow = new BrowserWindow({
     webPreferences: {
       contextIsolation: false,
       nodeIntegration: true,
@@ -160,19 +159,24 @@ const createLoadingScreen = () => {
     resizable: false,
   });
 
+  let url;
   if (env.isDevelopment) {
-    loadingScreen.webContents.openDevTools();
-    loadingScreen.webContents.on("devtools-opened", () => {
+    loaderWindow.webContents.openDevTools();
+    loaderWindow.webContents.on("devtools-opened", () => {
       setImmediate(() => {
-        loadingScreen.focus();
+        loaderWindow.focus();
       });
     });
   }
-  loadingScreen.setResizable(false);
-  loadingScreen.loadURL(`${__static}\\loading.html`);
-  loadingScreen.on("closed", () => (loadingScreen = null));
-  loadingScreen.webContents.on("did-finish-load", () => {
-    loadingScreen.show();
+  loaderWindow.setResizable(false);
+  loaderWindow.loadURL(
+    env.isDevelopment
+      ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}#loader`
+      : `file://${path.join(__dirname, "../build/index.html#loader")}`
+  );
+  loaderWindow.on("closed", () => (loaderWindow = null));
+  loaderWindow.webContents.on("did-finish-load", () => {
+    loaderWindow.show();
   });
 };
 
@@ -226,7 +230,7 @@ const createMainWindow = () => {
 
 const runPatcher = () => {
   mainWindow = createMainWindow();
-  loadingScreen.close();
+  loaderWindow.close();
 
   //
   // patcher.js
@@ -238,7 +242,7 @@ const runPatcher = () => {
 
   ipcMain.on("get-file-path", (event, arg) => {
     if (env.isDevelopment) {
-      // console.log(arg);
+      console.log(arg);
       event.returnValue = app.getPath("userData");
     } else {
       event.returnValue = app
@@ -272,11 +276,11 @@ autoUpdater.on("error", (error) => {
     "Error: ",
     error == null ? "unknown" : (error.stack || error).toString()
   );
-  loadingScreen.close();
+  loaderWindow.close();
 });
 
 const sendStatusToWindow = (text) => {
-  loadingScreen.webContents.executeJavaScript(
+  loaderWindow.webContents.executeJavaScript(
     "document.getElementById('LoaderContent').innerHTML = '" + text + "'"
   );
 };
@@ -307,7 +311,7 @@ autoUpdater.on("update-downloaded", () => {
 
 // create main BrowserWindow when electron is ready
 app.on("ready", () => {
-  createLoadingScreen();
+  createLoaderWindow();
   runSelfUpdate();
 });
 

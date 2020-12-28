@@ -1,19 +1,19 @@
-import React from 'react';
-import './App.css';
-import Iframe from 'react-iframe';
+import React from "react";
+import "./window-patcher.scss";
+import Iframe from "react-iframe";
 
-const App = () => {
-  const img1 = require('./assets/background.jpg');
-  const img2 = require('./assets/close-default.jpg');
-  const img3 = require('./assets/close-down.jpg');
-  const img4 = require('./assets/close-hover.jpg');
-  const img5 = require('./assets/start-default.jpg');
-  const img6 = require('./assets/start-disabled.jpg');
-  const img7 = require('./assets/start-down.jpg');
-  const img8 = require('./assets/start-hover.jpg');
-  const { patcher } = require('./patcher.js');
-  const { ipcRenderer } = require('electron');
-  ipcRenderer.on('call-patcher', () => {
+const WindowPatcher = () => {
+  const img1 = require("./assets/background.jpg");
+  const img2 = require("./assets/close-default.jpg");
+  const img3 = require("./assets/close-down.jpg");
+  const img4 = require("./assets/close-hover.jpg");
+  const img5 = require("./assets/start-default.jpg");
+  const img6 = require("./assets/start-disabled.jpg");
+  const img7 = require("./assets/start-down.jpg");
+  const img8 = require("./assets/start-hover.jpg");
+  const { patcher } = require("./patcher.js");
+  const { ipcRenderer } = require("electron");
+  ipcRenderer.on("call-patcher", () => {
     patcher();
   });
 
@@ -65,4 +65,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default WindowPatcher;

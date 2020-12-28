@@ -1,0 +1,22 @@
+#LoaderWrapper {
+  -webkit-app-region: drag;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+  box-sizing: border-box;
+  background-color: #f1eff1;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+}
+
+#LoaderContent {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+  font-size: 16px;
+}
