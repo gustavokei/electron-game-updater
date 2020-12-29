@@ -55,7 +55,7 @@ const checkDriver = () => {
 
 const runSelfUpdate = () => {
   if (env.isDevelopment) {
-    // runPatcher();
+    runPatcher();
   } else {
     autoUpdater.checkForUpdatesAndNotify();
   }
@@ -310,6 +310,15 @@ autoUpdater.on("update-downloaded", () => {
 
 // create main BrowserWindow when electron is ready
 app.on("ready", () => {
+  if (env.isDevelopment) {
+    const {
+      default: installExtension,
+      REACT_DEVELOPER_TOOLS,
+    } = require("electron-devtools-installer");
+    installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log("An error occurred: ", err));
+  }
   createLoaderWindow();
   runSelfUpdate();
 });
