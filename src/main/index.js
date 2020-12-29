@@ -156,6 +156,7 @@ const createLoaderWindow = () => {
     transparent: true,
     frame: false,
     fullscreenable: false,
+    maximizable: false,
     resizable: false,
   });
 
@@ -193,6 +194,7 @@ const createMainWindow = () => {
     transparent: true,
     frame: false,
     fullscreenable: false,
+    maximizable: false,
     resizable: false,
   });
 
