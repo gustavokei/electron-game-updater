@@ -49,11 +49,12 @@ module.exports = {
     // 'getUpdate' Function
     //
     const getUpdate = async () => {
-      let url = "https://storage.googleapis.com/gc-client/gc-launcher.json?v=2";
+      let url =
+        "https://jsonblob.com/api/jsonBlob/35ec50ad-49e5-11eb-91e7-39c0ff618f29";
 
       if (isDev()) {
         url =
-          "https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/gc-client/gc-launcher.json?v=2";
+          "https://cors-anywhere.herokuapp.com/https://jsonblob.com/api/jsonBlob/35ec50ad-49e5-11eb-91e7-39c0ff618f29";
       }
 
       let response = await fetch(url, {
