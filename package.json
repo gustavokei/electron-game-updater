@@ -3,7 +3,7 @@
   "productName": "Grand Chase Sandbox",
   "author": "Gustavo Kei",
   "description": "Electron GC Launcher",
-  "version": "0.0.168",
+  "version": "0.0.169",
   "fileAssociations": {
     "description": "Electron GC Launcher"
   },

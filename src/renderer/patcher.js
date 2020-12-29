@@ -151,8 +151,8 @@ module.exports = {
         }
         //
 
-        console.log("localArray: " + JSON.stringify(localArray));
-        console.log("updateArray: " + JSON.stringify(remoteArray));
+        // console.log("localArray: " + JSON.stringify(localArray));
+        // console.log("updateArray: " + JSON.stringify(remoteArray));
         //console.log('updateArray.length: ' + remoteArray.length);
 
         //
