@@ -98,7 +98,7 @@ module.exports = {
         res.forEach((file) => {
           const size = fs.statSync(file).size;
 
-          const specialFiles = ["main.exe"];
+          const specialFiles = ["main.exe", "script.kom"];
           if (specialFiles.some((v) => file.includes(v))) {
             const hash = require("crypto")
               .createHash("sha1")
