@@ -128,9 +128,15 @@ module.exports = {
         for (var i = 0; i < localArray.length; i++) {
           for (var j = 0; j < remoteArray.length; j++) {
             if (
+              localArray[i].hash != undefined &&
+              localArray[i].hash == remoteArray[j].hash
+            ) {
+              remoteArray.splice(j, 1);
+              break;
+            } else if (
               localArray[i].file == remoteArray[j].file &&
               localArray[i].size == remoteArray[j].size &&
-              localArray[i].hash == remoteArray[j].hash
+              localArray[i].hash == undefined
             ) {
               remoteArray.splice(j, 1);
               break;
@@ -139,7 +145,8 @@ module.exports = {
         }
         //
 
-        //console.log('updateArray: ' + JSON.stringify(remoteArray));
+        console.log("localArray: " + JSON.stringify(localArray));
+        console.log("updateArray: " + JSON.stringify(remoteArray));
         //console.log('updateArray.length: ' + remoteArray.length);
 
         //
