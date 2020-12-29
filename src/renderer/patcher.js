@@ -96,12 +96,17 @@ module.exports = {
       getFiles(filePath + "\\gc-client\\").then((res) => {
         res.forEach((file) => {
           const size = fs.statSync(file).size;
-          // const hash = require('crypto')
-          //   .createHash('sha1')
-          //   .update(fs.readFileSync(file))
-          //   .digest('base64');
-          //   file = localArray.push({ file, size, hash });
-          file = localArray.push({ file, size });
+
+          const specialFiles = ["main.exe"];
+          if (specialFiles.some((v) => file.includes(v))) {
+            const hash = require("crypto")
+              .createHash("sha1")
+              .update(fs.readFileSync(file))
+              .digest("base64");
+            file = localArray.push({ file, size, hash });
+          } else {
+            file = localArray.push({ file, size });
+          }
         });
 
         // console.log("localArray: " + JSON.stringify(localArray));
@@ -124,8 +129,8 @@ module.exports = {
           for (var j = 0; j < remoteArray.length; j++) {
             if (
               localArray[i].file == remoteArray[j].file &&
-              localArray[i].size == remoteArray[j].size
-              // && localArray[i].hash == remoteArray[j].hash
+              localArray[i].size == remoteArray[j].size &&
+              localArray[i].hash == remoteArray[j].hash
             ) {
               remoteArray.splice(j, 1);
               break;
