@@ -49,11 +49,11 @@ module.exports = {
     // 'getUpdate' Function
     //
     const getUpdate = async () => {
-      let url = "https://storage.googleapis.com/gc-client/gc-launcher.json";
+      let url = "http://gustavokei.000webhostapp.com/gc-launcher.json";
 
       if (isDev()) {
         url =
-          "https://cors-anywhere.herokuapp.com/https://storage.googleapis.com/gc-client/gc-launcher.json";
+          "https://cors-anywhere.herokuapp.com/http://gustavokei.000webhostapp.com/gc-launcher.json";
       }
 
       let response = await fetch(url, {
@@ -100,9 +100,7 @@ module.exports = {
           const specialFiles = ["main.exe", "stage/script.kom"];
           if (
             specialFiles.indexOf(
-              file
-                .replace(process.env.PORTABLE_EXECUTABLE_DIR + "\\", "")
-                .replace(/\\/g, "/")
+              file.replace(filePath + "\\gc-client\\", "").replace(/\\/g, "/")
             ) > -1
           ) {
             const hash = require("crypto")
@@ -114,8 +112,6 @@ module.exports = {
             file = localArray.push({ file, size });
           }
         });
-
-        // console.log("localArray: " + JSON.stringify(localArray));
 
         //
         // Filter remote paths (keep only file name)
