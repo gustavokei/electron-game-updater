@@ -12,7 +12,7 @@ The releases in this repository are linked to my own Grand Chase Private Server.
 
 Additionaly, text is in Brazilian Portuguese.
 
-If you wish to make this project work for your game, you should clone/fork this repository and follow the steps bellow.
+If you wish to make this project work for your game, clone/fork this repository and follow the steps bellow.
 
 ## Step 1 - Edit `package.json`
 
