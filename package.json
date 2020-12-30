@@ -1,11 +1,11 @@
 {
-  "name": "gc-launcher",
-  "productName": "Grand Chase Sandbox",
-  "author": "Gustavo Kei",
-  "description": "Electron GC Launcher",
-  "version": "0.0.170",
+  "name": "electron-game-updater",
+  "productName": "Electron Game Updater",
+  "author": "Gustavo Kei Amemiya",
+  "description": "Electron Game Updater",
+  "version": "0.0.171",
   "fileAssociations": {
-    "description": "Electron GC Launcher"
+    "description": "Electron Game Updater"
   },
   "license": "MIT",
   "scripts": {
@@ -48,7 +48,7 @@
       "publish": [
         {
           "provider": "github",
-          "repo": "gc-launcher",
+          "repo": "electron-game-updater",
           "owner": "gustavokei",
           "private": false,
           "releaseType": "release"
