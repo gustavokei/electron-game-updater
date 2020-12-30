@@ -68,7 +68,7 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 If your updater is closed source, you will need to [create a github token and set an environment variable (on user machine)](https://www.electron.build/auto-update#private-github-update-repo)
 
-### edit .env
+### create a `.env` file in the root directory
 
 ```dosini
 GH_OWNER=your-git-username
