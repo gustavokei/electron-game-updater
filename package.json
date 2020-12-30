@@ -1,19 +1,17 @@
 {
   "name": "electron-game-updater",
-  "productName": "Electron Game Updater",
+  "productName": "Grand Chase Sandbox",
   "author": "Gustavo Kei Amemiya",
   "description": "Electron Game Updater",
-  "version": "0.0.171",
+  "version": "0.0.172",
   "fileAssociations": {
     "description": "Electron Game Updater"
   },
   "license": "MIT",
   "scripts": {
-    "dev": "electron-webpack dev --dev",
     "compile": "electron-webpack",
-    "dist": "npm run compile && electron-builder --publish always && node build/delete-old-releases.js",
-    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null",
-    "build": "npm run compile && electron-builder"
+    "build": "npm run compile && electron-builder",
+    "dist": "npm run compile && electron-builder --publish always && node build/delete-old-releases.js"
   },
   "dependencies": {
     "electron-dl": "^3.0.2",
@@ -31,7 +29,6 @@
     "dotenv": "^8.2.0",
     "electron": "11.1.1",
     "electron-builder": "22.9.1",
-    "electron-devtools-installer": "^3.1.1",
     "electron-webpack": "^2.8.2",
     "electron-webpack-eslint": "^6.0.0",
     "eslint-plugin-react": "^7.21.5",
@@ -41,10 +38,16 @@
     "webpack": "^4.44.2"
   },
   "build": {
+    "extraFiles": [
+      {
+        "from": "./build/egu-config.json",
+        "to": "./egu-config.json"
+      }
+    ],
     "win": {
       "target": "nsis-web",
       "requestedExecutionLevel": "highestAvailable",
-      "icon": "build/icon.ico",
+      "icon": "build/icon.png",
       "publish": [
         {
           "provider": "github",

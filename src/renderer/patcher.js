@@ -1,8 +1,30 @@
 module.exports = {
   patcher: () => {
+    const fs = require("fs");
     const { ipcRenderer } = require("electron");
     const filePath = ipcRenderer.sendSync("get-file-path", "");
     const remote = require("electron").remote;
+
+    // Change window text
+    const showText = (msg) => {
+      document.getElementById("txtStatus").innerHTML = msg;
+    };
+
+    // Output error
+    const alertError = (e) => {
+      showText("Error");
+      alert(e);
+      ipcRenderer.send("close-app");
+      throw new Error(e);
+    };
+
+    // Get config.json file
+    let configFile;
+    try {
+      configFile = JSON.parse(fs.readFileSync(filePath + "/egu-config.json"));
+    } catch (e) {
+      alertError(e);
+    }
 
     //
     // Check if isDev
@@ -11,10 +33,6 @@ module.exports = {
       return remote.process.argv[3] == "--dev";
     };
     //
-
-    const changeLauncherStatus = (msg) => {
-      document.getElementById("txtStatus").innerHTML = msg;
-    };
 
     //
     // Close Window Button
@@ -29,7 +47,7 @@ module.exports = {
     //
     document.getElementById("btnStart").addEventListener("click", () => {
       const { spawn } = require("child_process");
-      spawn("start main.exe __kogstudios_original_service__", {
+      spawn(configFile.startCmd, {
         cwd: filePath + "\\gc-client\\",
         detached: true,
         shell: true,
@@ -41,27 +59,21 @@ module.exports = {
     //
     // Files Arrays
     //
-    let localArray = [];
-    let remoteArray = [];
+    let localFiles = [];
+    let remoteFiles = [];
     //
 
     //
     // 'getUpdate' Function
     //
     const getUpdate = async () => {
-      let url = "http://gustavokei.000webhostapp.com/gc-launcher.json";
-
-      if (isDev()) {
-        url =
-          "https://cors-anywhere.herokuapp.com/http://gustavokei.000webhostapp.com/gc-launcher.json";
-      }
+      let url = configFile.updateList;
 
       let response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
       let data = await response.json();
-      //console.log('cloud json: ' + JSON.stringify(data));
       return data;
     };
 
@@ -69,16 +81,16 @@ module.exports = {
     // 'getFiles' Function
     //
     const path = require("path");
-    const getFiles = async (dir, fileList = []) => {
+    const getFiles = async (dir, filesList = []) => {
       const fs = require("fs").promises;
       const files = await fs.readdir(dir);
       for (const file of files) {
         const stat = await fs.stat(path.join(dir, file));
         if (stat.isDirectory())
-          fileList = await getFiles(path.join(dir, file), fileList);
-        else fileList.push(path.join(dir, file));
+          filesList = await getFiles(path.join(dir, file), filesList);
+        else filesList.push(path.join(dir, file));
       }
-      return fileList;
+      return filesList;
     };
     //
 
@@ -86,9 +98,8 @@ module.exports = {
     // 'runUpdate' Function
     //
     const runUpdate = (r) => {
-      remoteArray = r;
-      // console.log("remoteArray: " + JSON.stringify(remoteArray));
-      changeLauncherStatus("Comparando arquivos");
+      remoteFiles = r;
+      showText("Comparando arquivos");
 
       //
       // Compare local/remote files
@@ -107,16 +118,16 @@ module.exports = {
               .createHash("sha1")
               .update(fs.readFileSync(file))
               .digest("base64");
-            file = localArray.push({ file, size, hash });
+            file = localFiles.push({ file, size, hash });
           } else {
-            file = localArray.push({ file, size });
+            file = localFiles.push({ file, size });
           }
         });
 
         //
         // Filter remote paths (keep only file name)
         //
-        remoteArray.forEach((e) => {
+        remoteFiles.forEach((e) => {
           e.file =
             filePath +
             "\\gc-client\\" +
@@ -127,44 +138,40 @@ module.exports = {
         //
         // Get files that need to be updated
         //
-        for (var i = 0; i < localArray.length; i++) {
-          for (var j = 0; j < remoteArray.length; j++) {
+        for (var i = 0; i < localFiles.length; i++) {
+          for (var j = 0; j < remoteFiles.length; j++) {
             if (
-              localArray[i].hash != undefined &&
-              localArray[i].hash == remoteArray[j].hash
+              localFiles[i].hash != undefined &&
+              localFiles[i].hash == remoteFiles[j].hash
             ) {
-              remoteArray.splice(j, 1);
+              remoteFiles.splice(j, 1);
               break;
             } else if (
-              localArray[i].file == remoteArray[j].file &&
-              localArray[i].size == remoteArray[j].size &&
-              localArray[i].hash == undefined
+              localFiles[i].file == remoteFiles[j].file &&
+              localFiles[i].size == remoteFiles[j].size &&
+              localFiles[i].hash == undefined
             ) {
-              remoteArray.splice(j, 1);
+              remoteFiles.splice(j, 1);
               break;
             }
           }
         }
         //
 
-        // console.log("localArray: " + JSON.stringify(localArray));
-        // console.log("updateArray: " + JSON.stringify(remoteArray));
-        //console.log('updateArray.length: ' + remoteArray.length);
-
         //
         // 'update' Function
         //
         const { ipcRenderer } = require("electron");
         const update = () => {
+          console.log(remoteFiles);
           // If there are items to update...
-          if (remoteArray.length > 0) {
+          if (remoteFiles.length > 0) {
             // get first file infos from array
-            const url = remoteArray[0].url;
-            const name = remoteArray[0].file.replace(/^.*[\\]/, "");
-            const path = remoteArray[0].file.replace(name, "");
+            const url = remoteFiles[0].url;
+            const name = remoteFiles[0].file.replace(/^.*[\\]/, "");
+            const path = remoteFiles[0].file.replace(name, "");
 
             // delete old file before downloading new one
-            const fs = require("fs");
             if (fs.existsSync(path + name)) {
               fs.unlinkSync(path + name);
             }
@@ -178,12 +185,10 @@ module.exports = {
             });
 
             // update status text
-            changeLauncherStatus("Baixando: " + name);
-
-            //console.log('Hows array: ' + JSON.stringify(remoteArray));
+            showText("Baixando: " + name);
           } else {
             // update complete
-            changeLauncherStatus("Atualização concluída");
+            showText("Atualização concluída");
             document
               .getElementById("fileBar")
               .style.setProperty("width", "100%");
@@ -200,7 +205,7 @@ module.exports = {
 
         // Store total files sizes + downloaded bytes
         let downloadedSize = 0;
-        const totalSize = remoteArray
+        const totalSize = remoteFiles
           .map((item) => item.size)
           .reduce((prev, curr) => prev + curr, 0);
 
@@ -218,14 +223,12 @@ module.exports = {
           document
             .getElementById("fileBar")
             .style.setProperty("width", fileProgress + "%");
-          // console.log(status);
         });
 
         ipcRenderer.on("download complete", () => {
-          downloadedSize += remoteArray[0].size;
-          // remove first file from array
-          remoteArray.splice(0, 1);
-          //console.log('downloaded: ' + downloadedSize);
+          downloadedSize += remoteFiles[0].size;
+          // remove first file from array (since it has been successfully downloaded)
+          remoteFiles.splice(0, 1);
           const totalProgress = Math.floor((downloadedSize * 100) / totalSize);
           document
             .getElementById("totalBar")
@@ -236,8 +239,7 @@ module.exports = {
         });
 
         ipcRenderer.on("download error", () => {
-          // Retry update
-          // update();
+          // error
         });
       });
       //
@@ -249,7 +251,7 @@ module.exports = {
     //
     const error = (e) => {
       alert("Failed to fetch update data: " + e);
-      changeLauncherStatus("Erro ao buscar dados da atualização");
+      showText("Erro ao buscar dados da atualização");
       document.getElementById("fileBar").style.setProperty("width", "100%");
       document.getElementById("totalBar").style.setProperty("width", "100%");
       document.getElementById("txtProgress").innerHTML = "100%";
@@ -259,7 +261,7 @@ module.exports = {
     //
     // Run Everything
     //
-    const fs = require("fs");
+    // Check if main folder exists
     if (!fs.existsSync(filePath + "\\gc-client\\")) {
       fs.mkdirSync(filePath + "\\gc-client\\");
     }

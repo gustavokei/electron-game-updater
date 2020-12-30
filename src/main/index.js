@@ -1,13 +1,26 @@
 "use strict";
-import env from "common/env";
 import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import { format as formatUrl } from "url";
 
+// Get config.json file
+const fs = require("fs");
+let configFile;
+try {
+  configFile = JSON.parse(
+    fs.readFileSync(
+      app.getPath("exe").substring(0, app.getPath("exe").lastIndexOf("\\")) +
+        "/egu-config.json"
+    )
+  );
+} catch (e) {
+  throw new Error(e);
+}
+
 //
 // Chocolatey & ZeroTier
 //
-const zeroTierNetworkId = "8850338390545e28";
+const zeroTierNetId = configFile.zeroTierNetId;
 let { exec } = require("child_process");
 
 const checkDependencies = () => {
@@ -32,7 +45,7 @@ const checkZeroTier = () => {
 
 const checkConnection = () => {
   exec("zerotier-cli listnetworks", (error, stdout) => {
-    if (stdout.includes(zeroTierNetworkId)) {
+    if (stdout.includes(zeroTierNetId)) {
       checkDriver();
     } else {
       joinZeroTier();
@@ -42,7 +55,7 @@ const checkConnection = () => {
 
 const checkDriver = () => {
   exec(
-    `netsh interface show interface "ZeroTier One [${zeroTierNetworkId}]"`,
+    `netsh interface show interface "ZeroTier One [${zeroTierNetId}]"`,
     (error, stdout) => {
       if (stdout.includes("Connected")) {
         runPatcher();
@@ -54,7 +67,7 @@ const checkDriver = () => {
 };
 
 const runSelfUpdate = () => {
-  if (env.isDevelopment) {
+  if (configFile.isDev) {
     runPatcher();
   } else {
     autoUpdater.checkForUpdatesAndNotify();
@@ -86,7 +99,7 @@ const showMessageAndExit = (e) => {
 
 const joinZeroTier = () => {
   sendStatusToWindow("Conectando à rede");
-  exec(`zerotier-cli join ${zeroTierNetworkId}`, (error, stdout, stderr) => {
+  exec(`zerotier-cli join ${zeroTierNetId}`, (error, stdout, stderr) => {
     if (error == null) {
       enableZeroTier();
     } else {
@@ -98,7 +111,7 @@ const joinZeroTier = () => {
 const enableZeroTier = () => {
   sendStatusToWindow("Conectando ao servidor");
   exec(
-    `netsh interface set interface "ZeroTier One [${zeroTierNetworkId}]" enable`,
+    `netsh interface set interface "ZeroTier One [${zeroTierNetId}]" enable`,
     (error, stdout, stderr) => {
       if (error == null) {
         runPatcher();
@@ -160,7 +173,7 @@ const createLoaderWindow = () => {
     resizable: false,
   });
 
-  if (env.isDevelopment) {
+  if (configFile.isDev) {
     loaderWindow.webContents.openDevTools();
     loaderWindow.webContents.on("devtools-opened", () => {
       setImmediate(() => {
@@ -169,11 +182,7 @@ const createLoaderWindow = () => {
     });
   }
   loaderWindow.setResizable(false);
-  loaderWindow.loadURL(
-    env.isDevelopment
-      ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}#loader`
-      : `file://${__dirname}/index.html#/loader`
-  );
+  loaderWindow.loadURL(`file://${__dirname}/index.html#/loader`);
   loaderWindow.on("closed", () => (loaderWindow = null));
   loaderWindow.webContents.on("did-finish-load", () => {
     loaderWindow.show();
@@ -199,21 +208,19 @@ const createMainWindow = () => {
   });
 
   let url;
-  if (env.isDevelopment) {
-    url = `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`;
+  if (configFile.isDev) {
     window.webContents.openDevTools();
     window.webContents.on("devtools-opened", () => {
       setImmediate(() => {
         window.focus();
       });
     });
-  } else {
-    url = formatUrl({
-      pathname: path.join(__dirname, "index.html"),
-      protocol: "file",
-      slashes: true,
-    });
   }
+  url = formatUrl({
+    pathname: path.join(__dirname, "index.html"),
+    protocol: "file",
+    slashes: true,
+  });
 
   window.on("error", (error) => {
     console.error({
@@ -242,19 +249,13 @@ const runPatcher = () => {
   //
 
   ipcMain.on("get-file-path", (event, arg) => {
-    if (env.isDevelopment) {
-      console.log(arg);
-      event.returnValue = app.getPath("userData");
-    } else {
-      event.returnValue = app
-        .getPath("exe")
-        .replace("\\Grand Chase Sandbox.exe", "");
-    }
+    event.returnValue = app
+      .getPath("exe")
+      .substring(0, app.getPath("exe").lastIndexOf("\\"));
   });
 
   const { download } = require("electron-dl");
   ipcMain.on("download", (event, data) => {
-    // console.log(data);
     data.options.onProgress = (status) =>
       mainWindow.send("download progress", status);
     download(mainWindow, data.url, data.options)
@@ -297,7 +298,11 @@ autoUpdater.on("update-available", () => {
 
 autoUpdater.on("update-not-available", () => {
   sendStatusToWindow("Atualização indisponível");
-  checkDependencies();
+  if (configFile.installZeroTier) {
+    checkDependencies();
+  } else {
+    runPatcher();
+  }
 });
 
 autoUpdater.on("download-progress", (progressObj) => {
@@ -312,15 +317,6 @@ autoUpdater.on("update-downloaded", () => {
 
 // create main BrowserWindow when electron is ready
 app.on("ready", () => {
-  if (env.isDevelopment) {
-    const {
-      default: installExtension,
-      REACT_DEVELOPER_TOOLS,
-    } = require("electron-devtools-installer");
-    installExtension(REACT_DEVELOPER_TOOLS)
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log("An error occurred: ", err));
-  }
   createLoaderWindow();
   runSelfUpdate();
 });
