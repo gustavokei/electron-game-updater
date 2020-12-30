@@ -1,4 +1,7 @@
 # Electron Game Updater
+
+Check out the [helper tool](https://github.com/gustavokei/electron-game-updater-helper) made to work with this project
+
 ![app image](https://i.imgur.com/8PDZc3N.gif)
 
 This Windows app tries to replicate the behaviour of the original launcher of the game [Grand Chase (for PC)](https://grandchase.fandom.com/wiki/Grand_Chase)
