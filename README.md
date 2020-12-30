@@ -56,6 +56,9 @@ Therefore, if you decide your updater should be closed source, create two reposi
 * `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
 * `startCmd` = start command
 * `isDev` = setting this to true will open Chrome DevTools
+
+### `egu-config.json` example
+
 ```json
 {
   "clientDir": "gc-client",
