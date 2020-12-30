@@ -66,7 +66,7 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 ## Step 3 - Build & Publish
 
-If your updater is closed source, you will need to [create a github token and set an environment variable (on user machine)](https://www.electron.build/auto-update#private-github-update-repo)
+If your updater is closed source, you will need to [create a github token and set an environment variable](https://www.electron.build/auto-update#private-github-update-repo) (on user machine and in the file bellow)
 
 ### create a `.env` file in the root directory
 
