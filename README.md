@@ -47,7 +47,7 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 ## Step 2 - Edit `build/egu-config.json`
 
-* `clientDir` = this is the directory where the client will be downloaded
+* `clientDir` = the directory name where the client will be downloaded (it will be inside the installation directory chosen by the user)
 * `updateList` = url to json file generated with [electron-game-updater-helper](https://github.com/gustavokei/electron-game-updater-helper)
 * `installZeroTier` = my private server runs with VPN, but if you don't want to use this, set to false
 * `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
