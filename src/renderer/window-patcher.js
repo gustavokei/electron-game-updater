@@ -58,7 +58,7 @@ const WindowPatcher = () => {
         </div>
       </div>
       <Iframe
-        url="https://g-plug.pstatic.net/20191127_153_M2/1574835080640mOqvh_PNG/PLUG_Main_191127_1stAnniversary.png?type=l1500_500"
+        url="https://gustavokei.000webhostapp.com/gc-launcher.html"
         id="iframe"
       />
     </div>

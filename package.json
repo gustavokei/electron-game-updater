@@ -3,7 +3,7 @@
   "productName": "Grand Chase Sandbox",
   "author": "Gustavo Kei Amemiya",
   "description": "Electron Game Updater",
-  "version": "0.0.172",
+  "version": "0.0.173",
   "fileAssociations": {
     "description": "Electron Game Updater"
   },
@@ -47,7 +47,7 @@
     "win": {
       "target": "nsis-web",
       "requestedExecutionLevel": "highestAvailable",
-      "icon": "build/icon.png",
+      "icon": "build/icon.ico",
       "publish": [
         {
           "provider": "github",
