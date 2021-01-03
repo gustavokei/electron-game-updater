@@ -13,7 +13,7 @@ This Windows app tries to replicate the behaviour of the original launcher of th
 
 The releases in this repository are linked to my own Grand Chase Private Server.
 
-Additionaly, text is in Brazilian Portuguese.
+Text is in Brazilian Portuguese.
 
 If you wish to make this project work for your game, clone/fork this repository and follow the steps bellow.
 
