@@ -1,6 +1,6 @@
 {
   "clientDir": "gc-client",
-  "updateList": "http://gustavokei.000webhostapp.com/eguh-update-list.json",
+  "updateList": "https://storage.googleapis.com/gc-client/eguh-update-list.json",
   "installZeroTier": true,
   "zeroTierNetId": "8850338390545e28",
   "startCmd": "start main.exe __kogstudios_original_service__",
