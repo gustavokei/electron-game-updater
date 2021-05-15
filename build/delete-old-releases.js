@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { Octokit } = require("@octokit/core");
 const octokit = new Octokit({ auth: process.env.GH_TOKEN });
 
