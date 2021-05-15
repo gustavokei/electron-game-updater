@@ -74,15 +74,15 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 If your updater is closed source, [read this](https://www.electron.build/auto-update#private-github-update-repo).
 
-### create a `build.env.js` file in the /build directory
+### create a `.env` file in the /build directory
 
-```js
-process.env.GH_OWNER = "your-git-username";
-process.env.GH_REPO = "your-private-repo";
-process.env.GH_TOKEN = "your-git-token";
+```dosini
+GH_OWNER=your-git-username
+GH_REPO=your-private-repo
+GH_TOKEN=your-git-token
 ```
 
-Push your changes and run `npm run publish`
+Push your changes and run `npm run dist`
 
 This will create a release in your `dist` repository and run `build/delete-old-releases.js`
 
