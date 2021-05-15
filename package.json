@@ -3,7 +3,7 @@
   "productName": "Grand Chase Sandbox",
   "author": "Gustavo Kei Amemiya",
   "description": "Electron Game Updater",
-  "version": "0.0.177",
+  "version": "0.0.178",
   "fileAssociations": {
     "description": "Electron Game Updater"
   },
@@ -14,6 +14,7 @@
     "dist": "npm run compile && electron-builder --publish always && node build/delete-old-releases.js"
   },
   "dependencies": {
+    "dotenv": "^9.0.2",
     "electron-dl": "^3.0.2",
     "electron-updater": "^4.3.5",
     "react": "^17.0.1",
@@ -26,7 +27,6 @@
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/preset-react": "^7.12.10",
     "@octokit/core": "^3.2.4",
-    "dotenv": "^8.2.0",
     "electron": "11.1.1",
     "electron-builder": "22.9.1",
     "electron-webpack": "^2.8.2",
