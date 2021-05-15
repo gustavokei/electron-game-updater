@@ -6,10 +6,10 @@ Check out the [helper tool](https://github.com/gustavokei/electron-game-updater-
 
 This Windows app tries to replicate the behaviour of the original launcher of the game [Grand Chase (for PC)](https://grandchase.fandom.com/wiki/Grand_Chase)
 
-* Auto updates game files
-* Auto updates itself
-* Compares size and hash (if specified) from files
-* Launches any .exe with parameters if necessary
+- Auto updates game files
+- Auto updates itself
+- Compares size and hash (if specified) from files
+- Launches any .exe with parameters if necessary
 
 The releases in this repository are linked to my own Grand Chase Private Server.
 
@@ -50,12 +50,12 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 ## Step 2 - Edit `build/egu-config.json`
 
-* `clientDir` = the directory name where the client will be downloaded (it will be inside the installation directory chosen by the user)
-* `updateList` = url to json file generated with [electron-game-updater-helper](https://github.com/gustavokei/electron-game-updater-helper)
-* `installZeroTier` = my private server runs with VPN, but if you don't want to use this, set to false (this installs Chocolatey + ZeroTier VPN)
-* `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
-* `startCmd` = start command
-* `isDev` = setting this to true will open Chrome DevTools
+- `clientDir` = the directory name where the client will be downloaded (it will be inside the installation directory chosen by the user)
+- `updateList` = url to json file generated with [electron-game-updater-helper](https://github.com/gustavokei/electron-game-updater-helper)
+- `installZeroTier` = my private server runs with VPN, but if you don't want to use this, set to false (this installs Chocolatey + ZeroTier VPN)
+- `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
+- `startCmd` = start command
+- `isDev` = setting this to true will open Chrome DevTools
 
 ### `egu-config.json` example
 
@@ -72,9 +72,9 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 ## Step 3 - Build & Publish
 
-If your updater is closed source, you will need to [create a github token and set an environment variable](https://www.electron.build/auto-update#private-github-update-repo) (on user machine and in the file bellow)
+If your updater is closed source, [read this](https://www.electron.build/auto-update#private-github-update-repo).
 
-### create a `.env` file in the root directory
+### create a `.env` file in the /build directory
 
 ```dosini
 GH_OWNER=your-git-username
@@ -84,12 +84,12 @@ GH_TOKEN=your-git-token
 
 Push your changes and run `npm run publish`
 
-This will create a release on your `publish` repository and run `build/delete-old-releases.js` since there is no need for older releases
+This will create a release in your `dist` repository and run `build/delete-old-releases.js`
 
 You're done!
 
 ## Testing
 
-To develop this project, you need to set `isDev` to true on `build/egu-config.json` which will open Chrome DevTools when the updater launches.
+In order to debug, you need to set `isDev` to true on `build/egu-config.json` which will open Chrome DevTools when the updater launches.
 
 Then, run `npm run build` and you'll find a test build in the `dist/nsis-web` directory.
