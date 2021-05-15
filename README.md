@@ -74,12 +74,12 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 If your updater is closed source, [read this](https://www.electron.build/auto-update#private-github-update-repo).
 
-### create a `.env` file in the /build directory
+### create a `build.env.js` file in the /build directory
 
-```dosini
-GH_OWNER=your-git-username
-GH_REPO=your-private-repo
-GH_TOKEN=your-git-token
+```js
+process.env.GH_OWNER = "your-git-username";
+process.env.GH_REPO = "your-private-repo";
+process.env.GH_TOKEN = "your-git-token";
 ```
 
 Push your changes and run `npm run publish`
