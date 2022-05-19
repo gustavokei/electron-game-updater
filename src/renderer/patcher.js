@@ -27,14 +27,6 @@ module.exports = {
     }
 
     //
-    // Check if isDev
-    //
-    const isDev = () => {
-      return remote.process.argv[3] == "--dev";
-    };
-    //
-
-    //
     // Close Window Button
     //
     document.getElementById("btnClose").addEventListener("click", () => {
@@ -68,7 +60,6 @@ module.exports = {
     //
     const getUpdate = async () => {
       let url = configFile.updateList;
-
       let response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -99,150 +90,156 @@ module.exports = {
     //
     const runUpdate = (r) => {
       remoteFiles = r;
-      showText("Comparando arquivos");
-
-      //
-      // Compare local/remote files
-      //
-      getFiles(filePath + "\\gc-client\\").then((res) => {
-        res.forEach((file) => {
-          const size = fs.statSync(file).size;
-
-          const specialFiles = ["main.exe", "stage/script.kom"];
-          if (
-            specialFiles.indexOf(
-              file.replace(filePath + "\\gc-client\\", "").replace(/\\/g, "/")
-            ) > -1
-          ) {
-            const hash = require("crypto")
-              .createHash("sha1")
-              .update(fs.readFileSync(file))
-              .digest("base64");
-            file = localFiles.push({ file, size, hash });
-          } else {
-            file = localFiles.push({ file, size });
-          }
-        });
+      if (!remoteFiles.length) {
+        showText("Não foi possível buscar dados da atualização");
+      } else {
+        showText("Comparando arquivos");
 
         //
-        // Filter remote paths (keep only file name)
+        // Compare local/remote files
         //
-        remoteFiles.forEach((e) => {
-          e.file =
-            filePath +
-            "\\gc-client\\" +
-            JSON.stringify(e.file).replace(/"/g, "").replace(/\\\\/g, "\\");
-        });
-        //
+        getFiles(filePath + "\\gc-client\\").then((res) => {
+          res.forEach((file) => {
+            const size = fs.statSync(file).size;
 
-        //
-        // Get files that need to be updated
-        //
-        for (var i = 0; i < localFiles.length; i++) {
-          for (var j = 0; j < remoteFiles.length; j++) {
+            const specialFiles = ["main.exe", "stage/script.kom"];
             if (
-              localFiles[i].hash != undefined &&
-              localFiles[i].hash == remoteFiles[j].hash
+              specialFiles.indexOf(
+                file.replace(filePath + "\\gc-client\\", "").replace(/\\/g, "/")
+              ) > -1
             ) {
-              remoteFiles.splice(j, 1);
-              break;
-            } else if (
-              localFiles[i].file == remoteFiles[j].file &&
-              localFiles[i].size == remoteFiles[j].size &&
-              localFiles[i].hash == undefined
-            ) {
-              remoteFiles.splice(j, 1);
-              break;
+              const hash = require("crypto")
+                .createHash("sha1")
+                .update(fs.readFileSync(file))
+                .digest("base64");
+              file = localFiles.push({ file, size, hash });
+            } else {
+              file = localFiles.push({ file, size });
+            }
+          });
+
+          //
+          // Filter remote paths (keep only file name)
+          //
+          remoteFiles.forEach((e) => {
+            e.file =
+              filePath +
+              "\\gc-client\\" +
+              JSON.stringify(e.file).replace(/"/g, "").replace(/\\\\/g, "\\");
+          });
+          //
+
+          //
+          // Get files that need to be updated
+          //
+          for (var i = 0; i < localFiles.length; i++) {
+            for (var j = 0; j < remoteFiles.length; j++) {
+              if (
+                localFiles[i].hash != undefined &&
+                localFiles[i].hash == remoteFiles[j].hash
+              ) {
+                remoteFiles.splice(j, 1);
+                break;
+              } else if (
+                localFiles[i].file == remoteFiles[j].file &&
+                localFiles[i].size == remoteFiles[j].size &&
+                localFiles[i].hash == undefined
+              ) {
+                remoteFiles.splice(j, 1);
+                break;
+              }
             }
           }
-        }
-        //
+          //
 
-        //
-        // 'update' Function
-        //
-        const { ipcRenderer } = require("electron");
-        const update = () => {
-          console.log(remoteFiles);
-          // If there are items to update...
-          if (remoteFiles.length > 0) {
-            // get first file infos from array
-            const url = remoteFiles[0].url;
-            const name = remoteFiles[0].file.replace(/^.*[\\]/, "");
-            const path = remoteFiles[0].file.replace(name, "");
+          //
+          // 'update' Function
+          //
+          const { ipcRenderer } = require("electron");
+          const update = () => {
+            console.log(remoteFiles);
+            // If there are items to update...
+            if (remoteFiles.length > 0) {
+              // get first file infos from array
+              const url = remoteFiles[0].url;
+              const name = remoteFiles[0].file.replace(/^.*[\\]/, "");
+              const path = remoteFiles[0].file.replace(name, "");
 
-            // delete old file before downloading new one
-            if (fs.existsSync(path + name)) {
-              fs.unlinkSync(path + name);
+              // delete old file before downloading new one
+              if (fs.existsSync(path + name)) {
+                fs.unlinkSync(path + name);
+              }
+
+              // download first file from array
+              ipcRenderer.send("download", {
+                url: url,
+                options: {
+                  directory: path,
+                },
+              });
+
+              // update status text
+              showText("Baixando: " + name);
+            } else {
+              // update complete
+              showText("Atualização concluída");
+              document
+                .getElementById("fileBar")
+                .style.setProperty("width", "100%");
+              document
+                .getElementById("btnStartDisabled")
+                .style.setProperty("display", "none");
+              document
+                .getElementById("totalBar")
+                .style.setProperty("width", "100%");
+              document.getElementById("txtProgress").innerHTML = "100%";
             }
+          };
+          //
 
-            // download first file from array
-            ipcRenderer.send("download", {
-              url: url,
-              options: {
-                directory: path,
-              },
-            });
+          // Store total files sizes + downloaded bytes
+          let downloadedSize = 0;
+          const totalSize = remoteFiles
+            .map((item) => item.size)
+            .reduce((prev, curr) => prev + curr, 0);
 
-            // update status text
-            showText("Baixando: " + name);
-          } else {
-            // update complete
-            showText("Atualização concluída");
+          //
+          // Call update function
+          //
+          update();
+          //
+
+          //
+          // Download Progress
+          //
+          ipcRenderer.on("download progress", (event, status) => {
+            const fileProgress = Math.floor(status.percent * 100);
             document
               .getElementById("fileBar")
-              .style.setProperty("width", "100%");
-            document
-              .getElementById("btnStartDisabled")
-              .style.setProperty("display", "none");
+              .style.setProperty("width", fileProgress + "%");
+          });
+
+          ipcRenderer.on("download complete", () => {
+            downloadedSize += remoteFiles[0].size;
+            // remove first file from array (since it has been successfully downloaded)
+            remoteFiles.splice(0, 1);
+            const totalProgress = Math.floor(
+              (downloadedSize * 100) / totalSize
+            );
             document
               .getElementById("totalBar")
-              .style.setProperty("width", "100%");
-            document.getElementById("txtProgress").innerHTML = "100%";
-          }
-        };
-        //
+              .style.setProperty("width", totalProgress + "%");
+            document.getElementById("txtProgress").innerHTML =
+              totalProgress + "%";
+            update();
+          });
 
-        // Store total files sizes + downloaded bytes
-        let downloadedSize = 0;
-        const totalSize = remoteFiles
-          .map((item) => item.size)
-          .reduce((prev, curr) => prev + curr, 0);
-
-        //
-        // Call update function
-        //
-        update();
-        //
-
-        //
-        // Download Progress
-        //
-        ipcRenderer.on("download progress", (event, status) => {
-          const fileProgress = Math.floor(status.percent * 100);
-          document
-            .getElementById("fileBar")
-            .style.setProperty("width", fileProgress + "%");
+          ipcRenderer.on("download error", () => {
+            // error
+          });
         });
-
-        ipcRenderer.on("download complete", () => {
-          downloadedSize += remoteFiles[0].size;
-          // remove first file from array (since it has been successfully downloaded)
-          remoteFiles.splice(0, 1);
-          const totalProgress = Math.floor((downloadedSize * 100) / totalSize);
-          document
-            .getElementById("totalBar")
-            .style.setProperty("width", totalProgress + "%");
-          document.getElementById("txtProgress").innerHTML =
-            totalProgress + "%";
-          update();
-        });
-
-        ipcRenderer.on("download error", () => {
-          // error
-        });
-      });
-      //
+        //
+      }
     };
     //
 
