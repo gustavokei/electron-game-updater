@@ -6,20 +6,19 @@ You'll need this [helper tool](https://github.com/gustavokei/electron-game-updat
 
 This Windows app tries to replicate the behaviour of the original launcher of the game [Grand Chase (for PC)](https://grandchase.fandom.com/wiki/Grand_Chase)
 
+Features:
 - Auto updates game files
 - Auto updates itself
 - Compares size and hash (if specified) from files
 - Launches any .exe with parameters if necessary
 
-The releases in this repository are linked to my own Grand Chase Private Server.
-
 Text is in Brazilian Portuguese.
+
+The releases in this repository are linked to my own Grand Chase Private Server.
 
 If you wish to make this project work for you, clone/fork this repository and follow the steps bellow.
 
 ## Step 1 - Edit `package.json`
-
-This will make the package your own and implement auto update.
 
 The `publish` repo contains the launcher releases (no source code).
 
@@ -52,7 +51,7 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 - `clientDir` = the directory name where the client will be downloaded (it will be inside the installation directory chosen by the user)
 - `updateList` = url to json file generated with [electron-game-updater-helper](https://github.com/gustavokei/electron-game-updater-helper)
-- `installZeroTier` = my private server runs with VPN, so if you don't want to use this, set it to `false` (this installs Chocolatey + ZeroTier VPN)
+- `installZeroTier` = my private server runs with VPN, if you don't want to use this, set it to `false` (this installs Chocolatey + ZeroTier VPN)
 - `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
 - `startCmd` = start command
 - `isDev` = setting this to `true` will open Chrome DevTools when the updater launches
