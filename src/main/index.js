@@ -298,10 +298,22 @@ autoUpdater.on("update-available", () => {
 
 autoUpdater.on("update-not-available", () => {
   sendStatusToWindow("Atualização indisponível");
-  if (configFile.installZeroTier) {
-    checkDependencies();
+  // Check if main folder exists
+  if (
+    !fs.existsSync(
+      app.getPath("exe").substring(0, app.getPath("exe").lastIndexOf("\\")) +
+        "/gc-client"
+    )
+  ) {
+    showErrorAndExit(
+      "Não foi possível encontrar a pasta 'gc-client'. Certifique-se que realizou o download do client junto ao launcher."
+    );
   } else {
-    runPatcher();
+    if (configFile.installZeroTier) {
+      checkDependencies();
+    } else {
+      runPatcher();
+    }
   }
 });
 

@@ -258,10 +258,6 @@ module.exports = {
     //
     // Run Everything
     //
-    // Check if main folder exists
-    if (!fs.existsSync(filePath + "\\gc-client\\")) {
-      fs.mkdirSync(filePath + "\\gc-client\\");
-    }
     getUpdate()
       .then((r) => runUpdate(r))
       .catch((e) => error(e));
