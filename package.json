@@ -1,9 +1,9 @@
 {
   "name": "electron-game-updater",
-  "productName": "Chase Devgames",
+  "productName": "Shadow Devgames",
   "author": "Devgames",
   "description": "Electron Game Updater",
-  "version": "0.0.195",
+  "version": "0.0.9",
   "fileAssociations": {
     "description": "Electron Game Updater"
   },
@@ -51,7 +51,7 @@
       "publish": [
         {
           "provider": "github",
-          "repo": "electron-game-updater",
+          "repo": "sw-dist",
           "owner": "gustavokei",
           "private": false,
           "releaseType": "release"

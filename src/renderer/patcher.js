@@ -37,9 +37,18 @@ module.exports = {
     // Start Game Button
     //
     document.getElementById("btnStart").addEventListener("click", () => {
+      const os = require("os");
+      const tempDir = os.tmpdir();
+      fs.copyFile(
+        filePath + "\\sw-client\\Config.tws",
+        tempDir + "\\Config.tws",
+        (err) => {
+          if (err) throw err;
+        }
+      );
       const { spawn } = require("child_process");
       spawn(configFile.startCmd, {
-        cwd: filePath + "\\gc-client\\",
+        cwd: filePath + "\\sw-client\\",
         detached: true,
         shell: true,
       });
@@ -97,14 +106,14 @@ module.exports = {
         //
         // Compare local/remote files
         //
-        getFiles(filePath + "\\gc-client\\").then((res) => {
+        getFiles(filePath + "\\sw-client\\").then((res) => {
           res.forEach((file) => {
             const size = fs.statSync(file).size;
 
             const specialFiles = ["main.exe", "stage/script.kom"];
             if (
               specialFiles.indexOf(
-                file.replace(filePath + "\\gc-client\\", "").replace(/\\/g, "/")
+                file.replace(filePath + "\\sw-client\\", "").replace(/\\/g, "/")
               ) > -1
             ) {
               const hash = require("crypto")
@@ -123,7 +132,7 @@ module.exports = {
           remoteFiles.forEach((e) => {
             e.file =
               filePath +
-              "\\gc-client\\" +
+              "\\sw-client\\" +
               JSON.stringify(e.file).replace(/"/g, "").replace(/\\\\/g, "\\");
           });
           //
@@ -257,8 +266,8 @@ module.exports = {
     // Run Everything
     //
     // Check if main folder exists
-    if (!fs.existsSync(filePath + "\\gc-client\\")) {
-      fs.mkdirSync(filePath + "\\gc-client\\");
+    if (!fs.existsSync(filePath + "\\sw-client\\")) {
+      fs.mkdirSync(filePath + "\\sw-client\\");
     }
     getUpdate()
       .then((r) => runUpdate(r))

@@ -3,8 +3,6 @@
 !macroend
 
 !macro customInstall
-	CopyFiles "$EXEDIR\gc-client\**" "$INSTDIR\gc-client"
-  RMDir /r "$EXEDIR\gc-client"
 	!insertmacro RunApp
 	!insertmacro quitSuccess
 !macroend
