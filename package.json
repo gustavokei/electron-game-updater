@@ -1,11 +1,11 @@
 {
-  "name": "electron-game-updater",
+  "name": "shadow-devgames",
   "productName": "Shadow Devgames",
   "author": "Devgames",
-  "description": "Electron Game Updater",
-  "version": "0.0.10",
+  "description": "Shadow Devgames",
+  "version": "0.0.11",
   "fileAssociations": {
-    "description": "Electron Game Updater"
+    "description": "Shadow Devgames"
   },
   "license": "MIT",
   "scripts": {
