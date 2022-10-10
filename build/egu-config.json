@@ -1,6 +1,6 @@
 {
   "clientDir": "sw-client",
-  "updateList": "https://raw.githubusercontent.com/gustavokei/electron-game-updater/shadow/build/egu-update-list.json",
+  "updateList": "https://raw.githubusercontent.com/gustavokei/electron-game-updater/shadow/build/eguh-update-list.json",
   "installZeroTier": true,
   "zeroTierNetId": "8850338390545e28",
   "startCmd": "start sw.exe",
