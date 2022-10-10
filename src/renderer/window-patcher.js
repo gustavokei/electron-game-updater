@@ -17,6 +17,18 @@ const WindowPatcher = () => {
     patcher();
   });
 
+  const getIframeUrl = () => {
+    const fs = require("fs");
+    const filePath = ipcRenderer.sendSync("get-file-path", "");
+    let configFile;
+    try {
+      configFile = JSON.parse(fs.readFileSync(filePath + "/egu-config.json"));
+    } catch (e) {
+      throw new Error(e);
+    }
+    return configFile.iframeUrl;
+  };
+
   return (
     <div className="App">
       <div className="draggable"></div>
@@ -57,10 +69,7 @@ const WindowPatcher = () => {
           <div id="totalBar" />
         </div>
       </div>
-      <Iframe
-        url="https://gustavokei.000webhostapp.com/gc-launcher.html"
-        id="iframe"
-      />
+      <Iframe url={getIframeUrl()} id="iframe" />
     </div>
   );
 };

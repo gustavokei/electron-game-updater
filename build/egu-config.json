@@ -4,5 +4,6 @@
   "installZeroTier": true,
   "zeroTierNetId": "8850338390545e28",
   "startCmd": "start main.exe __kogstudios_original_service__",
-  "isDev": false
+  "isDev": false,
+  "iframeUrl": "https://chase.devgames.app/"
 }

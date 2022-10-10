@@ -1,9 +1,9 @@
 {
   "name": "electron-game-updater",
-  "productName": "Grand Chase Sandbox",
-  "author": "Gustavo Kei Amemiya",
+  "productName": "Chase Devgames",
+  "author": "Devgames",
   "description": "Electron Game Updater",
-  "version": "0.0.193",
+  "version": "0.0.194",
   "fileAssociations": {
     "description": "Electron Game Updater"
   },

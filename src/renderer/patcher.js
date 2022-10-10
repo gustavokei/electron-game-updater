@@ -3,7 +3,6 @@ module.exports = {
     const fs = require("fs");
     const { ipcRenderer } = require("electron");
     const filePath = ipcRenderer.sendSync("get-file-path", "");
-    const remote = require("electron").remote;
 
     // Change window text
     const showText = (msg) => {
@@ -157,7 +156,6 @@ module.exports = {
           //
           const { ipcRenderer } = require("electron");
           const update = () => {
-            console.log(remoteFiles);
             // If there are items to update...
             if (remoteFiles.length > 0) {
               // get first file infos from array
