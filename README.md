@@ -7,6 +7,7 @@ You'll need this [helper tool](https://github.com/gustavokei/electron-game-updat
 This Windows app tries to replicate the behaviour of the original launcher of the game [Grand Chase (for PC)](https://grandchase.fandom.com/wiki/Grand_Chase)
 
 Features:
+
 - Auto updates game files
 - Auto updates itself
 - Compares size and hash (if specified) from files
@@ -51,7 +52,7 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 - `clientDir` = the directory name where the client will be downloaded (it will be inside the installation directory chosen by the user)
 - `updateList` = url to json file generated with [electron-game-updater-helper](https://github.com/gustavokei/electron-game-updater-helper)
-- `installZeroTier` = my private server runs with VPN, if you don't want to use this, set it to `false` (this installs Chocolatey + ZeroTier VPN)
+- `installZeroTier` = installs Chocolatey + ZeroTier VPN, if you don't want to use this, set it to `false`
 - `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
 - `startCmd` = start command
 - `isDev` = setting this to `true` will open Chrome DevTools when the updater launches
@@ -73,17 +74,14 @@ Therefore, if you decide your updater should be closed source, create two reposi
 
 If your updater is closed source, [read this](https://www.electron.build/auto-update#private-github-update-repo).
 
-Create a `.env` file in the root directory and fill the vars with the same values from `package.json:publish`
+Otherwise, just edit the `.env` file in the root directory
 
 ```dosini
 GH_OWNER=your-git-username
 GH_REPO=your-git-repo
+GH_TOKEN=your-git-classic-token (should have `repo` permission)
 ```
-
-Run `SETX GH_TOKEN your-git-token` (token should have `repo` permission to the public repository)
 
 Push your changes and run `npm run dist`
 
-This will create a release in your `dist` repository and run `build/delete-old-releases.js`
-
-You're done!
+This will create a release in your `dist` repository and run `build/delete-old-releases.js` which will keep only the latest release on github

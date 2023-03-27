@@ -3,7 +3,7 @@
   "productName": "Chase Devgames",
   "author": "Devgames",
   "description": "Chase Devgame",
-  "version": "0.0.197",
+  "version": "0.0.198",
   "fileAssociations": {
     "description": "Chase Devgame"
   },
@@ -11,7 +11,7 @@
   "scripts": {
     "compile": "electron-webpack",
     "build": "npm run compile && electron-builder --w --x64",
-    "dist": "npm run compile && electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
+    "dist": "npm run compile && GH_TOKEN=$(grep GH_TOKEN .env | cut -d '=' -f2) electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
   },
   "dependencies": {
     "electron-dl": "^3.0.2",
