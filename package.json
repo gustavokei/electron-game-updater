@@ -10,8 +10,8 @@
   "license": "MIT",
   "scripts": {
     "compile": "electron-webpack",
-    "build": "npm run compile && electron-builder",
-    "dist": "npm run compile && electron-builder --publish always && env-cmd node build/delete-old-releases.js"
+    "build": "npm run compile && electron-builder --w --x64",
+    "dist": "npm run compile && electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
   },
   "dependencies": {
     "electron-dl": "^3.0.2",
