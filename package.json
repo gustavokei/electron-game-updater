@@ -3,15 +3,15 @@
   "productName": "Shadow Devgames",
   "author": "Devgames",
   "description": "Shadow Devgames",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "fileAssociations": {
     "description": "Shadow Devgames"
   },
   "license": "MIT",
   "scripts": {
     "compile": "electron-webpack",
-    "build": "npm run compile && electron-builder",
-    "dist": "npm run compile && electron-builder --publish always && env-cmd node build/delete-old-releases.js"
+    "build": "npm run compile && electron-builder --w --x64",
+    "dist": "npm run compile && GH_TOKEN=$(grep GH_TOKEN .env | cut -d '=' -f2) electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
   },
   "dependencies": {
     "electron-dl": "^3.0.2",
