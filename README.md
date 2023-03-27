@@ -63,7 +63,7 @@ Therefore, if you decide your updater should be closed source, create two reposi
 {
   "clientDir": "gc-client",
   "updateList": "https://somewhere.com/eguh-update-list.json",
-  "installZeroTier": true,
+  "installZeroTier": false,
   "zeroTierNetId": "8850338390545e28",
   "startCmd": "start main.exe __kogstudios_original_service__",
   "isDev": false
