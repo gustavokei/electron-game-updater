@@ -1,3 +1,5 @@
 /node_modules
 /dist
+/egu-config.json
+/eguh-update-list.json
 .DS_Store

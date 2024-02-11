@@ -1,8 +1,11 @@
+import { hot } from 'react-hot-loader/root';
 import React from "react";
 import "./window-patcher.scss";
 import Iframe from "react-iframe";
+import { getConfigFileLocal } from "./utils/getConfigFileLocal.js"
+import { showErrorAndPause } from './utils/showErrorAndPause.js';
 
-const WindowPatcher = () => {
+const MainWindow = () => {
   const img1 = require("./assets/background.jpg");
   const img2 = require("./assets/close-default.jpg");
   const img3 = require("./assets/close-down.jpg");
@@ -13,21 +16,17 @@ const WindowPatcher = () => {
   const img8 = require("./assets/start-hover.jpg");
   const { patcher } = require("./patcher.js");
   const { ipcRenderer } = require("electron");
+  const configFileLocal = getConfigFileLocal()
   ipcRenderer.on("call-patcher", () => {
-    patcher();
-  });
-
-  const getIframeUrl = () => {
-    const fs = require("fs");
-    const filePath = ipcRenderer.sendSync("get-file-path", "");
-    let configFile;
-    try {
-      configFile = JSON.parse(fs.readFileSync(filePath + "/egu-config.json"));
-    } catch (e) {
-      throw new Error(e);
+    document.getElementById("btnClose").addEventListener("click", () => {
+      ipcRenderer.send("close-app");
+    });
+    if (!configFileLocal) {
+      showErrorAndPause("Não foi possível encontrar egu-config.json")
+    } else {
+      patcher(configFileLocal);
     }
-    return configFile.iframeUrl;
-  };
+  });
 
   return (
     <div className="App">
@@ -69,9 +68,9 @@ const WindowPatcher = () => {
           <div id="totalBar" />
         </div>
       </div>
-      <Iframe url={getIframeUrl()} id="iframe" />
+      {configFileLocal?.iframeUrl && <Iframe url={configFileLocal?.iframeUrl} id="iframe" />}
     </div>
   );
 };
 
-export default WindowPatcher;
+export default hot(MainWindow);

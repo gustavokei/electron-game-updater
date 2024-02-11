@@ -1,13 +1,12 @@
 # Electron Game Updater
 
-You'll need this [helper tool](https://github.com/gustavokei/electron-game-updater-helper) in order to generate your `eguh-update-list.json`
-
 ![app image](https://i.imgur.com/8PDZc3N.gif)
 
-This Windows app tries to replicate the behaviour of the original launcher of the game [Grand Chase (for PC)](https://grandchase.fandom.com/wiki/Grand_Chase)
+This Windows app tries to replicate and improve the behaviour of the original launcher of the game [Grand Chase (for PC)](https://grandchase.fandom.com/wiki/Grand_Chase)
 
 Features:
 
+- Portable .exe
 - Auto updates game files
 - Auto updates itself
 - Compares size and hash (if specified) from files
@@ -15,73 +14,22 @@ Features:
 
 Text is in Brazilian Portuguese.
 
-The releases in this repository are linked to my own Grand Chase Private Server.
+As of early 2024, I have refactored the project in order to make it portable and easier to configure.
 
-If you wish to make this project work for you, clone/fork this repository and follow the steps bellow.
-
-## Step 1 - Edit `package.json`
-
-The `publish` repo contains the launcher releases (no source code).
-
-Therefore, if you decide your updater should be closed source, create two repositories: one (private) for the launcher source code, and another one (public). In the `publish` section below, you should use the public repo credentials.
-
-```json
-...
-"name": "your-repo-name",
-"productName": "Your Game Name",
-"author": "Your Name",
-"description": "A description",
-"version": "1.0",
-"fileAssociations": {
-  "description": "The same description"
-},
-...
-    "publish": [
-      {
-        "provider": "github",
-        "repo": "your-launcher-repo-name",
-        "owner": "your-git-name",
-        "private": "true or false",
-        "releaseType": "release"
-      },
-    ]
-...
-```
-
-## Step 2 - Edit `build/egu-config.json`
-
-- `clientDir` = the directory name where the client will be downloaded (it will be inside the installation directory chosen by the user)
-- `updateList` = url to json file generated with [electron-game-updater-helper](https://github.com/gustavokei/electron-game-updater-helper)
-- `installZeroTier` = installs Chocolatey + ZeroTier VPN, if you don't want to use this, set it to `false`
-- `zeroTierNetId` = visit [www.zerotier.com](https://www.zerotier.com/) to know more
-- `startCmd` = start command
-- `isDev` = setting this to `true` will open Chrome DevTools when the updater launches
-
-### `egu-config.json` example
+To use it, you can download the portable .exe and create your own `egu-config.json` (they need to be in the same directory)
 
 ```json
 {
-  "clientDir": "gc-client",
-  "updateList": "https://somewhere.com/eguh-update-list.json",
-  "installZeroTier": false,
-  "zeroTierNetId": "8850338390545e28",
-  "startCmd": "start main.exe __kogstudios_original_service__",
-  "isDev": false
+  "launcherVer": 1, // this must be a number and will be used to auto update your portable .exe if there is a higher version on "configFileRemote" field
+  "clientDir": "game-client", // name of the folder that will be created next to the portable .exe and where the game files will be downloaded into
+  "startCmd": "start game.exe", // command to run when clicking on the start button (supports parameters)
+  "launcherUrl": "https://url-to-your/launcher.exe", // updater will download and autoupdate if remote launcherVer is higher than local
+  "configFileRemote": "https://url-to-your/egu-config.json", // remote url for egu-config.json (the updater will compare the launcherVer field)
+  "updateList": "https://url-to-your/egu-update-list.json", // remote url for eguh-update-list.json (see below how to generate yours)
+  "iframeUrl": "https://github.com/" // page to show in the launcher
 }
 ```
 
-## Step 3 - Build & Publish
+You will need this [helper tool](https://github.com/gustavokei/electron-game-updater-helper) in order to generate your `eguh-update-list.json`
 
-If your updater is closed source, [read this](https://www.electron.build/auto-update#private-github-update-repo).
-
-Otherwise, just edit the `.env` file in the root directory
-
-```dosini
-GH_OWNER=your-git-username
-GH_REPO=your-git-repo
-GH_TOKEN=your-git-classic-token (should have `repo` permission)
-```
-
-Push your changes and run `npm run dist`
-
-This will create a release in your `dist` repository and run `build/delete-old-releases.js` which will keep only the latest release on github
+For now, if you want to change the icon, splash, and all other image assets, you will have to compile the project. It is pretty easy to do it though, just switch to node v16, clone this repo, and finally run `npm install` and `npm run build`. There is also a development mode now, just put `egu-config.json` and `eguh-update-list.json` at the root directory and run `npm run dev`.

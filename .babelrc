@@ -1,13 +1,20 @@
 {
-  "presets": ["@babel/preset-env", "@babel/preset-react"],
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ],
   "env": {
     "development": {
       "plugins": [
-        "@babel/plugin-proposal-class-properties"
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-transform-optional-chaining"
       ]
     },
     "production": {
-      "plugins": ["@babel/plugin-proposal-class-properties"]
+      "plugins": [
+        "@babel/plugin-proposal-class-properties",
+        "@babel/plugin-transform-optional-chaining"
+      ]
     }
   }
 }

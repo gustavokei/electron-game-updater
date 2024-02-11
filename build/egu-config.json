@@ -1,9 +1,0 @@
-{
-  "clientDir": "gc-client",
-  "updateList": "https://raw.githubusercontent.com/gustavokei/electron-game-updater/main/build/eguh-update-list.json",
-  "installZeroTier": false,
-  "zeroTierNetId": "8850338390545e28",
-  "startCmd": "start main.exe __kogstudios_original_service__",
-  "isDev": false,
-  "iframeUrl": "https://chase.devgames.app/"
-}

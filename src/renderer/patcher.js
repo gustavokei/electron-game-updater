@@ -1,64 +1,124 @@
+const isDevelopment = process.env.NODE_ENV !== 'production';
+const { ipcRenderer } = require("electron");
+const { showErrorAndPause } = require("./utils/showErrorAndPause")
+const { getConfigFileRemote } = require("./utils/getConfigFileRemote")
+
 module.exports = {
-  patcher: () => {
+  patcher: (configFileLocal) => {
     const fs = require("fs");
-    const { ipcRenderer } = require("electron");
     const filePath = ipcRenderer.sendSync("get-file-path", "");
 
-    // Change window text
     const showText = (msg) => {
       document.getElementById("txtStatus").innerHTML = msg;
     };
 
-    // Output error
-    const alertError = (e) => {
-      showText("Error");
-      alert(e);
-      ipcRenderer.send("close-app");
-      throw new Error(e);
+    const checkForUpdates = async () => {
+      const remoteConfig = await getConfigFileRemote(configFileLocal?.configFileRemote);
+
+      if (remoteConfig?.launcherVer > configFileLocal?.launcherVer) {
+
+        showText("Baixando egu-config.json");
+
+        ipcRenderer.send("download", {
+          url: remoteConfig?.configFileRemote,
+          options: {
+            directory: filePath,
+            filename: "egu-config.json",
+            overwrite: true
+          },
+        });
+
+        ipcRenderer.on("download complete", () => {
+          document.getElementById("fileBar").style.setProperty("width", "100%");
+          document.getElementById("txtProgress").innerHTML = "50%";
+          document.getElementById("totalBar").style.setProperty("width", "50%");
+
+          showText("Baixando launcher.exe");
+
+          ipcRenderer.send("download", {
+            url: remoteConfig?.launcherUrl,
+            options: {
+              directory: filePath,
+              filename: "launcher-new.exe",
+              overwrite: true
+            },
+          });
+
+          ipcRenderer.on("download progress", (event, status) => {
+            const fileProgress = Math.floor(status.percent * 100);
+            document.getElementById("fileBar").style.setProperty("width", fileProgress + "%");
+          });
+
+          ipcRenderer.on("download progress", (event, status) => {
+            const fileProgress = Math.floor(status.percent * 100);
+            document.getElementById("fileBar").style.setProperty("width", fileProgress + "%");
+          });
+
+          ipcRenderer.on("download complete", () => {
+            document.getElementById("fileBar").style.setProperty("width", "100%");
+            document.getElementById("txtProgress").innerHTML = "100%";
+            document.getElementById("totalBar").style.setProperty("width", "100%");
+            replaceExecutable();
+          });
+        });
+
+        ipcRenderer.on("download error", () => {
+          showErrorAndPause("Ocorreu um erro ao atualizar, reinicie o launcher")
+        });
+      } else {
+        getUpdate()
+          .then((r) => runUpdate(r))
+      }
     };
 
-    // Get config.json file
-    let configFile;
-    try {
-      configFile = JSON.parse(fs.readFileSync(filePath + "/egu-config.json"));
-    } catch (e) {
-      alertError(e);
-    }
 
-    //
-    // Close Window Button
-    //
-    document.getElementById("btnClose").addEventListener("click", () => {
+    const replaceExecutable = () => {
+      const batchContent = `
+      @echo off
+      set MAX_RETRIES=3
+      set RETRY_COUNT=0
+      
+      :RETRY
+      move /Y "${filePath}\\launcher-new.exe" "${filePath}\\launcher.exe"
+      if errorlevel 1 (
+          set /A RETRY_COUNT+=1
+          if %RETRY_COUNT% lss %MAX_RETRIES% (
+              timeout /t 1 /nobreak >nul
+              goto RETRY
+          ) else (
+              echo Maximum retries reached. Exiting.
+              exit /b 1
+          )
+      )
+      start "" "${filePath}\\launcher.exe"
+      del /F "${filePath}\\launcher-update.bat"
+      `;
+
+      fs.writeFileSync(`${filePath}\\launcher-update.bat`, batchContent, 'utf8');
+
+      const { spawn } = require("child_process");
+      spawn(`start /min cmd.exe /C ${filePath}\\launcher-update.bat`, {
+        detached: true,
+        shell: true,
+      });
       ipcRenderer.send("close-app");
-    });
-    //
+    };
 
-    //
-    // Start Game Button
-    //
     document.getElementById("btnStart").addEventListener("click", () => {
       const { spawn } = require("child_process");
-      spawn(configFile.startCmd, {
-        cwd: filePath + "\\gc-client\\",
+      spawn(configFileLocal.startCmd, {
+        cwd: filePath + `\\${configFileLocal.clientDir}\\`,
         detached: true,
         shell: true,
       });
       ipcRenderer.send("close-app");
     });
-    //
 
-    //
-    // Files Arrays
-    //
     let localFiles = [];
     let remoteFiles = [];
-    //
 
-    //
-    // 'getUpdate' Function
-    //
     const getUpdate = async () => {
-      let url = configFile.updateList;
+      let url = configFileLocal.updateList;
       let response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -67,9 +127,6 @@ module.exports = {
       return data;
     };
 
-    //
-    // 'getFiles' Function
-    //
     const path = require("path");
     const getFiles = async (dir, filesList = []) => {
       const fs = require("fs").promises;
@@ -82,11 +139,7 @@ module.exports = {
       }
       return filesList;
     };
-    //
 
-    //
-    // 'runUpdate' Function
-    //
     const runUpdate = (r) => {
       remoteFiles = r;
       if (!remoteFiles.length) {
@@ -94,17 +147,14 @@ module.exports = {
       } else {
         showText("Comparando arquivos");
 
-        //
-        // Compare local/remote files
-        //
-        getFiles(filePath + "\\gc-client\\").then((res) => {
+        getFiles(filePath + `\\${configFileLocal.clientDir}\\`).then((res) => {
           res.forEach((file) => {
             const size = fs.statSync(file).size;
-
-            const specialFiles = ["main.exe", "stage/script.kom"];
+            const filesWithHash = remoteFiles.filter(item => Object.prototype.hasOwnProperty.call(item, 'hash'));
+            const fileNamesWithHash = filesWithHash.map(item => item.file);
             if (
-              specialFiles.indexOf(
-                file.replace(filePath + "\\gc-client\\", "").replace(/\\/g, "/")
+              fileNamesWithHash.indexOf(
+                file.replace(filePath + `\\${configFileLocal.clientDir}\\`, "").replace(/\\/g, "/")
               ) > -1
             ) {
               const hash = require("crypto")
@@ -117,20 +167,13 @@ module.exports = {
             }
           });
 
-          //
-          // Filter remote paths (keep only file name)
-          //
           remoteFiles.forEach((e) => {
             e.file =
               filePath +
-              "\\gc-client\\" +
+              `\\${configFileLocal.clientDir}\\` +
               JSON.stringify(e.file).replace(/"/g, "").replace(/\\\\/g, "\\");
           });
-          //
 
-          //
-          // Get files that need to be updated
-          //
           for (var i = 0; i < localFiles.length; i++) {
             for (var j = 0; j < remoteFiles.length; j++) {
               if (
@@ -149,120 +192,82 @@ module.exports = {
               }
             }
           }
-          //
 
-          //
-          // 'update' Function
-          //
-          const { ipcRenderer } = require("electron");
+          const totalRemoteSize = remoteFiles
+            .map((item) => item.size)
+            .reduce((prev, curr) => prev + curr, 0);
+          let totalLocalSize = localFiles
+            .map((item) => item.size)
+            .reduce((prev, curr) => prev + curr, 0);
+          const downloadedSize = totalRemoteSize + totalLocalSize;
+          const totalPercentage = downloadedSize === 0 ? 0 : Math.floor((totalLocalSize * 100) / downloadedSize);
+
+          document.getElementById("totalBar").style.setProperty("width", totalPercentage + "%");
+          document.getElementById("txtProgress").innerHTML = totalPercentage + "%";
+
           const update = () => {
-            // If there are items to update...
             if (remoteFiles.length > 0) {
-              // get first file infos from array
               const url = remoteFiles[0].url;
               const name = remoteFiles[0].file.replace(/^.*[\\]/, "");
               const path = remoteFiles[0].file.replace(name, "");
 
-              // delete old file before downloading new one
-              if (fs.existsSync(path + name)) {
-                fs.unlinkSync(path + name);
-              }
-
-              // download first file from array
               ipcRenderer.send("download", {
                 url: url,
                 options: {
                   directory: path,
+                  overwrite: true
                 },
               });
-
-              // update status text
               showText("Baixando: " + name);
             } else {
-              // update complete
               showText("Atualização concluída");
-              document
-                .getElementById("fileBar")
-                .style.setProperty("width", "100%");
-              document
-                .getElementById("btnStartDisabled")
-                .style.setProperty("display", "none");
-              document
-                .getElementById("totalBar")
-                .style.setProperty("width", "100%");
+              document.getElementById("fileBar").style.setProperty("width", "100%");
+              document.getElementById("btnStartDisabled").style.setProperty("display", "none");
+              document.getElementById("totalBar").style.setProperty("width", "100%");
               document.getElementById("txtProgress").innerHTML = "100%";
             }
           };
-          //
 
-          // Store total files sizes + downloaded bytes
-          let downloadedSize = 0;
-          const totalSize = remoteFiles
-            .map((item) => item.size)
-            .reduce((prev, curr) => prev + curr, 0);
-
-          //
-          // Call update function
-          //
           update();
-          //
 
-          //
-          // Download Progress
-          //
           ipcRenderer.on("download progress", (event, status) => {
             const fileProgress = Math.floor(status.percent * 100);
-            document
-              .getElementById("fileBar")
-              .style.setProperty("width", fileProgress + "%");
+            document.getElementById("fileBar").style.setProperty("width", fileProgress + "%");
           });
 
           ipcRenderer.on("download complete", () => {
-            downloadedSize += remoteFiles[0].size;
-            // remove first file from array (since it has been successfully downloaded)
+            totalLocalSize += remoteFiles[0].size;
             remoteFiles.splice(0, 1);
-            const totalProgress = Math.floor(
-              (downloadedSize * 100) / totalSize
-            );
-            document
-              .getElementById("totalBar")
-              .style.setProperty("width", totalProgress + "%");
-            document.getElementById("txtProgress").innerHTML =
-              totalProgress + "%";
+            const totalPercentage = downloadedSize === 0 ? 0 : Math.floor((totalLocalSize * 100) / downloadedSize);
+            document.getElementById("totalBar").style.setProperty("width", totalPercentage + "%");
+            document.getElementById("txtProgress").innerHTML = totalPercentage + "%";
+
             update();
           });
 
+
           ipcRenderer.on("download error", () => {
-            // error
+            showErrorAndPause("Ocorreu um erro ao atualizar, reinicie o launcher")
           });
         });
-        //
       }
     };
-    //
 
-    //
-    // 'error' Function
-    //
-    const error = (e) => {
-      alert("Failed to fetch update data: " + e);
-      showText("Erro ao buscar dados da atualização");
-      document.getElementById("fileBar").style.setProperty("width", "100%");
-      document.getElementById("totalBar").style.setProperty("width", "100%");
-      document.getElementById("txtProgress").innerHTML = "100%";
-    };
-    //
-
-    //
-    // Run Everything
-    //
-    // Check if main folder exists
-    if (!fs.existsSync(filePath + "\\gc-client\\")) {
-      fs.mkdirSync(filePath + "\\gc-client\\");
+    if (!fs.existsSync(filePath + `\\${configFileLocal.clientDir}\\`)) {
+      fs.mkdirSync(filePath + `\\${configFileLocal.clientDir}\\`);
     }
-    getUpdate()
-      .then((r) => runUpdate(r))
-      .catch((e) => error(e));
-    //
+    try {
+      if (isDevelopment) {
+        runUpdate(JSON.parse(fs.readFileSync("eguh-update-list.json")))
+      } else {
+        try {
+          checkForUpdates();
+        } catch (e) {
+          showErrorAndPause("Erro ao tentar atualizar launcher")
+        }
+      }
+    } catch (e) {
+      showErrorAndPause(e)
+    }
   },
 };

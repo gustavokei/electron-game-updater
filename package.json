@@ -1,15 +1,16 @@
 {
-  "name": "chase-devgames",
-  "productName": "Chase Devgames",
-  "author": "Devgames",
-  "description": "Chase Devgame",
-  "version": "0.0.198",
+  "name": "electron-game-updater",
+  "productName": "Electron Game Updater",
+  "author": "Gustavo Kei Amemiya",
+  "description": "Electron Game Updater",
+  "version": "0.1.0",
   "fileAssociations": {
-    "description": "Chase Devgame"
+    "description": "Electron Game Updater"
   },
   "license": "MIT",
   "scripts": {
     "compile": "electron-webpack",
+    "dev": "electron-webpack dev",
     "build": "npm run compile && electron-builder --w --x64",
     "dist": "npm run compile && GH_TOKEN=$(grep GH_TOKEN .env | cut -d '=' -f2) electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
   },
@@ -18,12 +19,13 @@
     "electron-updater": "^4.3.5",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-hot-loader": "^4.13.1",
     "react-iframe": "^1.8.0",
-    "react-router-dom": "^5.2.0",
     "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-transform-optional-chaining": "^7.23.4",
     "@babel/preset-react": "^7.12.10",
     "@octokit/core": "^3.2.4",
     "electron": "11.1.1",
@@ -38,14 +40,8 @@
     "webpack": "^4.44.2"
   },
   "build": {
-    "extraFiles": [
-      {
-        "from": "./build/egu-config.json",
-        "to": "./egu-config.json"
-      }
-    ],
     "win": {
-      "target": "nsis-web",
+      "target": "portable",
       "requestedExecutionLevel": "highestAvailable",
       "icon": "build/icon.ico",
       "publish": [
@@ -58,11 +54,10 @@
         }
       ]
     },
-    "nsisWeb": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowToChangeInstallationDirectory": true,
-      "deleteAppDataOnUninstall": true
+    "portable": {
+      "artifactName": "launcher.${ext}",
+      "requestExecutionLevel": "admin",
+      "splashImage": "build/splash.bmp"
     }
   }
 }
