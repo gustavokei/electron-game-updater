@@ -12,7 +12,7 @@
     "compile": "electron-webpack",
     "dev": "electron-webpack dev",
     "build": "npm run compile && electron-builder --w --x64",
-    "dist": "npm run compile && GH_TOKEN=$(grep GH_TOKEN .env | cut -d '=' -f2) electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
+    "dist": "npm run compile && (for /F \"tokens=*\" %i in (.env) do set %i) && electron-builder --w --x64 --publish always && env-cmd node build/delete-old-releases.js"
   },
   "dependencies": {
     "electron-dl": "^3.0.2",
