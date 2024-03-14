@@ -9,7 +9,7 @@ app.on('ready', () => {
   mainWindow = createMainWindow();
 
   ipcMain.on("close-app", () => {
-    app.exit();
+    app.quit();
   });
 
   ipcMain.on("get-file-path", (event, arg) => {
@@ -26,12 +26,12 @@ app.on('ready', () => {
     data.options.onProgress = (status) => {
       mainWindow.send("download progress", status);
     }
-    download(mainWindow, data.url, data.options).then(() => mainWindow.send("download complete")).catch(() => mainWindow.send("download error"));
+    download(mainWindow, data.url, data.options).then(() => {
+      if (data.options.filename === "launcher-new.exe") {
+        mainWindow.send("download complete launcher");
+      } else {
+        mainWindow.send("download complete")
+      }
+    }).catch(() => mainWindow.send("download error"));
   });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
 });

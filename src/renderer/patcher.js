@@ -7,6 +7,9 @@ module.exports = {
   patcher: (configFileLocal) => {
     const fs = require("fs");
     const filePath = ipcRenderer.sendSync("get-file-path", "");
+    const configPath = `${filePath}\\egu-config.json`
+    const launcherNewPath = `${filePath}\\launcher-new.exe`
+    const scriptPath = `${filePath}\\launcher-update.bat`
 
     const showText = (msg) => {
       document.getElementById("txtStatus").innerHTML = msg;
@@ -14,54 +17,53 @@ module.exports = {
 
     const checkForUpdates = async () => {
       const remoteConfig = await getConfigFileRemote(configFileLocal?.configFileRemote);
-
+    
       if (remoteConfig?.launcherVer > configFileLocal?.launcherVer) {
-
+    
         showText("Baixando egu-config.json");
-
+    
+        if (fs.existsSync(configPath)) {
+          fs.unlinkSync(configPath);
+        }
         ipcRenderer.send("download", {
           url: remoteConfig?.configFileRemote,
           options: {
             directory: filePath,
-            filename: "egu-config.json",
-            overwrite: true
+            filename: "egu-config.json"
           },
         });
-
+    
         ipcRenderer.on("download complete", () => {
-          document.getElementById("fileBar").style.setProperty("width", "100%");
-          document.getElementById("txtProgress").innerHTML = "50%";
-          document.getElementById("totalBar").style.setProperty("width", "50%");
-
-          showText("Baixando launcher.exe");
-
-          ipcRenderer.send("download", {
-            url: remoteConfig?.launcherUrl,
-            options: {
-              directory: filePath,
-              filename: "launcher-new.exe",
-              overwrite: true
-            },
-          });
-
-          ipcRenderer.on("download progress", (event, status) => {
-            const fileProgress = Math.floor(status.percent * 100);
-            document.getElementById("fileBar").style.setProperty("width", fileProgress + "%");
-          });
-
-          ipcRenderer.on("download progress", (event, status) => {
-            const fileProgress = Math.floor(status.percent * 100);
-            document.getElementById("fileBar").style.setProperty("width", fileProgress + "%");
-          });
-
-          ipcRenderer.on("download complete", () => {
+            document.getElementById("fileBar").style.setProperty("width", "100%");
+            document.getElementById("txtProgress").innerHTML = "50%";
+            document.getElementById("totalBar").style.setProperty("width", "50%");
+    
+            showText("Baixando launcher.exe");
+    
+            if (fs.existsSync(launcherNewPath)) {
+              fs.unlinkSync(launcherNewPath);
+            }
+            ipcRenderer.send("download", {
+              url: remoteConfig?.launcherUrl,
+              options: {
+                directory: filePath,
+                filename: "launcher-new.exe"
+              },
+            });
+        });
+    
+        ipcRenderer.on("download progress", (event, status) => {
+          const fileProgress = Math.floor(status.percent * 100);
+          document.getElementById("fileBar").style.setProperty("width", fileProgress + "%");
+        });
+    
+        ipcRenderer.on("download complete launcher", () => {
             document.getElementById("fileBar").style.setProperty("width", "100%");
             document.getElementById("txtProgress").innerHTML = "100%";
             document.getElementById("totalBar").style.setProperty("width", "100%");
             replaceExecutable();
-          });
         });
-
+    
         ipcRenderer.on("download error", () => {
           showErrorAndPause("Ocorreu um erro ao atualizar, reinicie o launcher")
         });
@@ -71,9 +73,8 @@ module.exports = {
       }
     };
 
-
     const replaceExecutable = () => {
-      const batchContent = `
+      const scriptContent = `
       @echo off
       set MAX_RETRIES=3
       set RETRY_COUNT=0
@@ -91,13 +92,16 @@ module.exports = {
           )
       )
       start "" "${filePath}\\launcher.exe"
-      del /F "${filePath}\\launcher-update.bat"
+      del /F "${scriptPath}"
       `;
 
-      fs.writeFileSync(`${filePath}\\launcher-update.bat`, batchContent, 'utf8');
+      if (fs.existsSync(scriptPath)) {
+        fs.unlinkSync(scriptPath);
+      }
+      fs.writeFileSync(scriptPath, scriptContent, 'utf8');
 
       const { spawn } = require("child_process");
-      spawn(`start /min cmd.exe /C ${filePath}\\launcher-update.bat`, {
+      spawn(`start /min cmd.exe /C ${scriptPath}`, {
         detached: true,
         shell: true,
       });
@@ -211,11 +215,14 @@ module.exports = {
               const name = remoteFiles[0].file.replace(/^.*[\\]/, "");
               const path = remoteFiles[0].file.replace(name, "");
 
+              if (fs.existsSync(path + name)) {
+                fs.unlinkSync(path + name);
+              }
+
               ipcRenderer.send("download", {
                 url: url,
                 options: {
-                  directory: path,
-                  overwrite: true
+                  directory: path
                 },
               });
               showText("Baixando: " + name);
