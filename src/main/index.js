@@ -9,7 +9,7 @@ app.on('ready', () => {
   mainWindow = createMainWindow();
 
   ipcMain.on("close-app", () => {
-    app.quit();
+    app.exit();
   });
 
   ipcMain.on("get-file-path", (event, arg) => {
