@@ -123,12 +123,13 @@ module.exports = {
     let remoteFiles = [];
 
     const getUpdate = async () => {
-      let url = configFileLocal.updateList;
-      let response = await fetch(url, {
+      const url = configFileLocal.updateList;
+      const urlWithCacheBusting = addCacheBustingSuffix(url)
+      const response = await fetch(urlWithCacheBusting, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-      let data = await response.json();
+      const data = await response.json();
       return data;
     };
 
