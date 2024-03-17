@@ -124,7 +124,7 @@ module.exports = {
 
     const getUpdate = async () => {
       let url = configFileLocal.updateList;
-      let response = await fetch(addCacheBustingSuffix(url), {
+      let response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
