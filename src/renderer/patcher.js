@@ -123,8 +123,8 @@ module.exports = {
     let remoteFiles = [];
 
     const getUpdate = async () => {
-      let url = addCacheBustingSuffix(configFileLocal.updateList);
-      let response = await fetch(url, {
+      let url = configFileLocal.updateList;
+      let response = await fetch(addCacheBustingSuffix(url), {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
