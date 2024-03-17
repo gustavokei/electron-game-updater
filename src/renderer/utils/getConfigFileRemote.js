@@ -1,6 +1,9 @@
+const { addCacheBustingSuffix } = require("./addCacheBustingSuffix");
+
 const getConfigFileRemote = async (url) => {
     try {
-        const response = await fetch(url);
+        const urlWithCacheBusting = addCacheBustingSuffix(url);
+        const response = await fetch(urlWithCacheBusting);
         if (!response.ok) {
             throw new Error('Failed to fetch JSON');
         }

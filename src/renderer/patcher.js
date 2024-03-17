@@ -2,6 +2,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const { ipcRenderer } = require("electron");
 const { showErrorAndPause } = require("./utils/showErrorAndPause")
 const { getConfigFileRemote } = require("./utils/getConfigFileRemote")
+const { addCacheBustingSuffix } = require("./utils/addCacheBustingSuffix");
 
 module.exports = {
   patcher: (configFileLocal) => {
@@ -26,7 +27,7 @@ module.exports = {
           fs.unlinkSync(configPath);
         }
         ipcRenderer.send("download", {
-          url: remoteConfig?.configFileRemote,
+          url: addCacheBustingSuffix(remoteConfig?.configFileRemote),
           options: {
             directory: filePath,
             filename: "egu-config.json"
@@ -44,7 +45,7 @@ module.exports = {
               fs.unlinkSync(launcherNewPath);
             }
             ipcRenderer.send("download", {
-              url: remoteConfig?.launcherUrl,
+              url: addCacheBustingSuffix(remoteConfig?.launcherUrl),
               options: {
                 directory: filePath,
                 filename: "launcher-new.exe"
@@ -220,7 +221,7 @@ module.exports = {
               }
 
               ipcRenderer.send("download", {
-                url: url,
+                url: addCacheBustingSuffix(url),
                 options: {
                   directory: path
                 },
