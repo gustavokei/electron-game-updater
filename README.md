@@ -26,11 +26,11 @@ The application downloads and extracts the latest game files or patches from hos
 
 ### Prerequisites
 
-1. **Node.js**: Make sure you have Node.js installed. The highest supported version is `16.20.2`. You can download it [here](https://nodejs.org/en/download/).
+- **Node.js**: Make sure you have Node.js installed. The highest supported version is `16.20.2`. You can download it [here](https://nodejs.org/en/download/).
 
 ### Usage
 
-1. **Create and Host Your JSON Configuration File**
+- **Create and Host Your JSON Configuration File**
 
    The application requires a hosted JSON file that defines the games, their versions, and URLs for updates.
 
