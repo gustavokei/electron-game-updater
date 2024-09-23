@@ -89,7 +89,7 @@ const defaultConfig = {
 };
 ```
 ### Customize the UI
-Game Icons and Backgrounds: Images and icons are located in `src/renderer/assets`. Customize these assets to fit your games.
+**Game Icons and Backgrounds**: Images and icons are located in `src/renderer/assets`. Customize these assets to fit your games.
 Styling: Adjust the `background-image` properties of `.game-icon` and `.game-patcher` in `src/renderer/styles.scss` to use the same game.name property from your JSON configuration.
 
 ### Install Dependencies
