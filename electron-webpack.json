@@ -1,0 +1,6 @@
+{
+  "commonSourceDirectory": "src/common",
+  "renderer": {
+    "webpackConfig": "webpack.renderer.js"
+  }
+}

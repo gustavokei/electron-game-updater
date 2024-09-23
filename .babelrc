@@ -1,0 +1,11 @@
+{
+  "presets": ["@babel/preset-react"],
+  "env": {
+    "development": {
+      "plugins": ["@babel/plugin-transform-optional-chaining"]
+    },
+    "production": {
+      "plugins": ["@babel/plugin-transform-optional-chaining"]
+    }
+  }
+}

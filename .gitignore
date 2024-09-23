@@ -1,0 +1,7 @@
+.env
+/node_modules
+/dist
+/egu-config.json
+/eguh-update-list.json
+/launcher-config.json
+.DS_Store

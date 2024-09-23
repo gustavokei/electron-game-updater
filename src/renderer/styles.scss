@@ -1,0 +1,194 @@
+body {
+  margin: 0;
+}
+
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+
+  .initial-setup {
+    width: 100%;
+    height: 100%;
+    background-color: #222;
+    z-index: 1;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-text {
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+
+      &::before {
+        content: "";
+        background: url("./assets/bouncing-ball.svg");
+        width: 24px;
+        height: 24px;
+        display: inline-block;
+        filter: invert(1);
+      }
+    }
+  }
+
+  .side-menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: #0f0f0f;
+    height: 100%;
+    width: 50px;
+
+    .game-icon {
+      width: 50px;
+      height: 50px;
+      background-size: 80%;
+      background-position: center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+      position: relative;
+
+      &.gc {
+        background-image: url("./assets/logo-gc.svg");
+      }
+
+      &.es {
+        background-image: url("./assets/logo-es.svg");
+      }
+
+      &.selected {
+        background-color: #3c3c3c;
+
+        &::before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          width: 2px;
+          background-color: #f2af0d;
+          display: block;
+          height: 100%;
+        }
+      }
+    }
+  }
+
+  .patcher {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    width: calc(100% - 50px);
+    height: 100%;
+    background-color: black;
+
+    .game-patcher {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-size: cover;
+      display: none;
+
+      &.gc {
+        background-image: url("./assets/bg-gc.jpg");
+      }
+
+      &.es {
+        background-image: url("./assets/bg-es.jpg");
+      }
+
+      &.active {
+        display: block;
+      }
+
+      .total-progress {
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid #fff;
+        border-radius: 5px;
+        height: 18px;
+        display: flex;
+        position: absolute;
+        bottom: 50px;
+        left: 40px;
+        width: 60%;
+        .total-mid {
+          height: 18px;
+          width: 100%;
+          display: flex;
+          .total-bar {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+            height: 100%;
+            width: 0%;
+          }
+        }
+      }
+
+      .text {
+        display: block;
+        color: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        position: absolute;
+        text-align: left;
+        pointer-events: none;
+      }
+
+      .txt {
+        &-status {
+          bottom: 78px;
+          left: 40px;
+          font-size: 14px;
+        }
+        &-progress {
+          bottom: 100px;
+          left: 40px;
+          font-size: 14px;
+        }
+        &-download-speed {
+          bottom: 28px;
+          left: 40px;
+          font-size: 14px;
+        }
+        &-time-remaining {
+          text-align: right;
+          bottom: 78px;
+          left: 40px;
+          font-size: 14px;
+          width: 60%;
+        }
+      }
+
+      .btn-start {
+        background-color: #e6b822;
+        color: #000000;
+        cursor: pointer;
+        border: none;
+        width: 200px;
+        width: 25%;
+        position: absolute;
+        bottom: 50px;
+        right: 40px;
+        font-size: 16px;
+        font-family: Arial, Helvetica, sans-serif;
+        text-align: center;
+        line-height: 50px;
+        border-radius: 5px;
+        font-weight: 600;
+
+        &.disabled {
+          background-color: #888888;
+          color: #686868;
+          z-index: 1;
+        }
+      }
+    }
+  }
+}
