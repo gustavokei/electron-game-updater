@@ -95,14 +95,14 @@ Images and icons are located in `src/renderer/assets`. Customize these assets to
 
 Adjust the `background-image` properties of `.game-icon` and `.game-patcher` in `src/renderer/styles.scss` to use the same `game.name` property from your JSON configuration.
 
-#### Install Dependencies
+#### 5: Install Dependencies
 Navigate to the project's root directory and run:
 
 ```bash
 npm install
 ```
 
-#### 5: Build the Application
+#### 6: Build the Application
 To create the executable:
 
 ```bash
