@@ -30,7 +30,7 @@ The application downloads and extracts the latest game files or patches from hos
 
 ### Usage
 
-- **Create and Host Your JSON Configuration File**
+#### 1: Create and Host Your JSON Configuration File
 
    The application requires a hosted JSON file that defines the games, their versions, and URLs for updates.
 
@@ -59,6 +59,8 @@ The application downloads and extracts the latest game files or patches from hos
        }
      ]
    }
+```
+
 - **launcherVer**: Version of the launcher.
 
 - **games**: Array of games with their respective launch commands, version numbers, and URLs for the client and patches.
@@ -72,12 +74,12 @@ The application downloads and extracts the latest game files or patches from hos
     - Ensure that the digit before `.7z` in the uploaded patch files matches the `patchVer` in the JSON. This means if `patchVer` is 3, the latest patch file must be named `game1-patch3.7z`.
 
 
-### Clone This Repository
+#### 2: Clone This Repository
 ```bash
 git clone https://github.com/gustavokei/electron-game-updater.git
 ```
 
-### Configure the Launcher
+#### 3: Configure the Launcher
 Edit the `defaultConfig` object in `src/renderer/utils/getConfigFileLocal.js` to point to your hosted JSON file:
 
 ```js
@@ -88,19 +90,19 @@ const defaultConfig = {
   games: [],
 };
 ```
-### Customize the UI
+#### 4: Customize the UI
 Images and icons are located in `src/renderer/assets`. Customize these assets to fit your games.
 
 Adjust the `background-image` properties of `.game-icon` and `.game-patcher` in `src/renderer/styles.scss` to use the same `game.name` property from your JSON configuration.
 
-### Install Dependencies
+#### Install Dependencies
 Navigate to the project's root directory and run:
 
 ```bash
 npm install
 ```
 
-### Build the Application
+#### 5: Build the Application
 To create the executable:
 
 ```bash
@@ -108,7 +110,7 @@ npm run build
 ```
 This will generate a `launcher.exe` in the `./dist` directory. Make sure to include `7za.exe` available in the same directory as your launcher. You can use the included version or download the latest from the [official 7zip website](https://www.7-zip.org/download.html).
 
-### Development Mode
+#### Extra: Development Mode
 
 For development and testing, you can run the project in development mode with hot reload:
 
