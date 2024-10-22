@@ -14,9 +14,8 @@ module.exports = {
       ? "launcher-config.json"
       : `${currentDir}\\launcher-config.json`;
 
-    const launcherNewPath = `${currentDir}\\${getFileNameFromUrl(
-      configRemote?.launcherUrl
-    )}`;
+    const launcherNew = `${getFileNameFromUrl(configRemote?.launcherUrl)}.new`;
+    const launcherNewPath = `${currentDir}\\${launcherNew}`;
     const replaceScriptPath = `${currentDir}\\launcher-update.bat`;
 
     const updateLauncher = () => {
@@ -35,6 +34,7 @@ module.exports = {
             url: addCacheBustingSuffix(configRemote?.launcherUrl),
             options: {
               directory: currentDir,
+              filename: `${launcherNew}`,
               step: "launcher",
             },
           });
@@ -67,19 +67,30 @@ module.exports = {
       setlocal
       set currentDir=%~dp0
       set launcherExe=%currentDir%launcher.exe
-      set newLauncher=%currentDir%${getFileNameFromUrl(
-        configRemote?.launcherUrl
-      )}
-      set sevenZipBin=%currentDir%7za.exe
+      set newLauncher=%currentDir%${launcherNew}
     
+      :: Kill the running launcher
       taskkill /IM launcher.exe /F >nul 2>&1
-      del /F /Q "%launcherExe%" >nul 2>&1
-      if exist "%newLauncher%" (
-          "%sevenZipBin%" x "%newLauncher%" -o"%currentDir%" -y >nul 2>&1
-          start "" "%launcherExe%" >nul 2>&1
-          del /F "%newLauncher%" >nul 2>&1
-          del /F "${replaceScriptPath}" >nul 2>&1
+    
+      :: Wait for the launcher to close
+      :waitLoop
+      tasklist /FI "IMAGENAME eq launcher.exe" 2>NUL | find /I "launcher.exe" >NUL
+      if not errorlevel 1 (
+          timeout /T 1 /NOBREAK >NUL
+          goto waitLoop
       )
+    
+      :: Delete the old launcher executable
+      del /F /Q "%launcherExe%" >nul 2>&1
+    
+      :: Rename the new launcher to launcher.exe
+      ren "%newLauncher%" "launcher.exe"
+    
+      :: Start the new launcher
+      start "" "%launcherExe%" >nul 2>&1
+    
+      :: Clean up the batch file
+      del /F "%~f0" >nul 2>&1
       exit /b
       `;
 

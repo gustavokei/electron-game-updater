@@ -13,6 +13,7 @@
     "build": "electron-webpack && electron-builder --w --x64"
   },
   "dependencies": {
+    "7zip-bin": "^5.2.0",
     "electron-dl": "^3.5.2",
     "node-7z": "^3.0.0",
     "react": "^18.3.1",
@@ -32,6 +33,16 @@
     "webpack": "^4.47.0"
   },
   "build": {
+    "asar": true,
+    "extraResources": [
+      {
+        "from": "node_modules/7zip-bin",
+        "to": "7zip-bin",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "win": {
       "target": "portable",
       "requestedExecutionLevel": "highestAvailable",
