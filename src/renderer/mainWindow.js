@@ -43,6 +43,7 @@ const MainWindow = () => {
         if (configLocal?.lastSelectedGame?.length > 0) {
           setSelectedGame(configLocal?.lastSelectedGame);
         } else {
+          updateConfigJson("lastSelectedGame", remoteConfig?.games?.[0]?.name, configLocalPath);
           setSelectedGame(remoteConfig?.games?.[0]?.name);
         }
 
