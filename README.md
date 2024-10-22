@@ -28,6 +28,8 @@ The application downloads and extracts the latest game files or patches from hos
 
 - **Node.js**: Make sure you have Node.js installed. The highest supported version is `16.20.2`. You can download it [here](https://nodejs.org/en/download/).
 
+- **7za.exe**: Make sure to put the `7za.exe` from the [official 7zip website](https://www.7-zip.org/download.html) in the root of the project.
+
 ### Usage
 
 #### 1: Create and Host Your JSON Configuration File
@@ -108,7 +110,7 @@ To create the executable:
 ```bash
 npm run build
 ```
-This will generate a `launcher.exe` in the `./dist` directory. Make sure to include `7za.exe` available in the same directory as your launcher. You can use the included version or download the latest from the [official 7zip website](https://www.7-zip.org/download.html).
+This will generate a `launcher.exe` in the `./dist` directory. Make sure to include `7za.exe`. Download the latest from the [official 7zip website](https://www.7-zip.org/download.html).
 
 #### Extra: Development Mode
 
