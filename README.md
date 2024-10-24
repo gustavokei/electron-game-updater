@@ -39,7 +39,7 @@ The application downloads and extracts the latest game files or patches from hos
    ```json
    {
      "launcherVer": 1,
-     "launcherUrl": "https://your-server.com/launcher.7z",
+     "launcherUrl": "https://your-server.com/launcher.exe",
      "games": [
        {
          "name": "game1",
