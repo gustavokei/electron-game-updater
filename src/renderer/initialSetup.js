@@ -100,7 +100,7 @@ module.exports = {
       fs.writeFileSync(replaceScriptPath, replaceScriptContent, "utf8");
 
       const { spawn } = require("child_process");
-      spawn(`start /min cmd.exe /C ${replaceScriptPath}`, {
+      spawn(`start /min cmd.exe /C "${replaceScriptPath}"`, {
         detached: true,
         shell: true,
       });
