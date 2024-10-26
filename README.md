@@ -32,46 +32,46 @@ The application downloads and extracts the latest game files or patches from hos
 
 #### 1: Create and Host Your JSON Configuration File
 
-   The application requires a hosted JSON file that defines the games, their versions, and URLs for updates.
+The application requires a hosted JSON file that defines the games, their versions, and URLs for updates.
 
-   Example of a JSON file:
+Example of a JSON file:
 
-   ```json
-   {
-     "launcherVer": 1,
-     "launcherUrl": "https://your-server.com/launcher.exe",
-     "games": [
-       {
-         "name": "game1",
-         "startCmd": "start game1.exe param1 param2",
-         "clientVer": 1,
-         "patchVer": 0,
-         "clientUrl": "https://your-server.com/game1-client.7z",
-         "patchUrl": "https://your-server.com/game1-patch.7z"
-       },
-       {
-         "name": "game2",
-         "startCmd": "start game2.exe paramA paramB",
-         "clientVer": 1,
-         "patchVer": 0,
-         "clientUrl": "https://your-server.com/game2-client.7z",
-         "patchUrl": "https://your-server.com/game2-patch.7z"
-       }
-     ]
-   }
+```json
+{
+  "launcherVer": 2,
+  "launcherUrl": "https://your-server.com/launcher.exe",
+  "games": [
+    {
+      "name": "game1",
+      "startCmd": "start game1.exe param1 param2",
+      "clientVer": 1,
+      "clientUrl": "https://your-server.com/game1-client.7z",
+      "patchUrls": [
+        "https://your-server.com/game1-patch1.7z",
+        "https://your-server.com/game1-patch2.7z"
+      ]
+    },
+    {
+      "name": "game2",
+      "startCmd": "start game2.exe paramA paramB",
+      "clientVer": 1,
+      "clientUrl": "https://your-server.com/game2-client.7z",
+      "patchUrls": []
+    }
+  ]
+}
 ```
 
 - **launcherVer**: Version of the launcher.
 
 - **games**: Array of games with their respective launch commands, version numbers, and URLs for the client and patches.
 
-  - **client**: When you upload a new client, increment the `clientVer` by 1 and update the `clientUrl` if necessary. Note that when a new client is uploaded, the launcher will automatically reset `patchVer` back to 0, indicating that there are no patches associated with the new client version.
+  - **client**: When you upload a new client, increment the `clientVer` by 1 and update the `clientUrl` if necessary. Note that when a new client is uploaded, `patchUrls` should be reset to an empty array, indicating that there are no patches associated with the new client version.
 
   - **patch**:
-    - Use a single `patchUrl` (e.g., `game1-patch.7z`).
-    - When uploading patches, follow the naming convention `game1-patchX.7z`, where `X` is the patch version number.
-    - For example, if `patchVer` is 3, you should have uploaded `game1-patch1.7z`, `game1-patch2.7z`, and `game1-patch3.7z` to support incremental updates.
-    - Ensure that the digit before `.7z` in the uploaded patch files matches the `patchVer` in the JSON. This means if `patchVer` is 3, the latest patch file must be named `game1-patch3.7z`.
+    - Use an array called `patchUrls`, where each URL points to an individual patch file (e.g., `"https://your-server.com/game1-patch1.7z"`).
+    - To apply incremental updates, ensure that each new patch file is appended to `patchUrls` in the correct order. For example, if there are three patches available, `patchUrls` should contain links to `game1-patch1.7z`, `game1-patch2.7z`, and `game1-patch3.7z`.
+    - If the array is empty, no patch will be applied.
 
 
 #### 2: Clone This Repository

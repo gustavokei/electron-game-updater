@@ -35,6 +35,15 @@ module.exports = {
       showText(`.txt-status.${game?.name}`, "Game is not yet installed");
     };
 
+    const waitForClientUpdateClick = async () => {
+      setIsUpdating(false);
+      disabledButton.style.setProperty("display", "none");
+      startButton.removeEventListener("click", handlePatchClick);
+      startButton.addEventListener("click", handleInstallClick);
+      showText(`.btn-start.${game?.name}`, "Download Client");
+      showText(`.txt-status.${game?.name}`, "New Client available");
+    };
+
     const handleInstallClick = async () => {
       disabledButton.style.display = "block";
       showText(`.btn-start.disabled.${game?.name}`, "Install");
@@ -58,9 +67,17 @@ module.exports = {
     };
 
     const init = async () => {
-      if (game?.clientVer > gameLocal?.clientVer) {
+      if (
+        gameLocal?.clientVer === 0 &&
+        game?.clientVer > gameLocal?.clientVer
+      ) {
         waitForInstallClick();
-      } else if (game?.patchVer > gameLocal?.patchVer) {
+      } else if (
+        gameLocal?.clientVer > 0 &&
+        game?.clientVer > gameLocal?.clientVer
+      ) {
+        waitForClientUpdateClick();
+      } else if (game?.patchUrls?.length > gameLocal?.patchVer) {
         waitForPatchClick();
       } else {
         finish();
@@ -118,7 +135,7 @@ module.exports = {
             { name: game.name, clientVer: game.clientVer, patchVer: 0 },
             configLocalPath
           );
-          if (game?.patchVer > gameLocal?.patchVer) {
+          if (game?.patchUrls?.length > gameLocal?.patchVer) {
             handlePatches();
           } else {
             finish();
@@ -129,28 +146,20 @@ module.exports = {
 
     const handlePatches = async () => {
       setIsUpdating(true);
-      const patchesToDownload = [];
 
-      // Generate the list of patches to download
-      for (let i = gameLocal.patchVer + 1; i <= game.patchVer; i++) {
-        const patchUrl = game.patchUrl.replace(".7z", `${i}.7z`); // Adjust for patch naming convention
-        patchesToDownload.push({
-          url: patchUrl,
-          index: i,
-        });
-      }
+      const patchesToDownload = game.patchUrls.slice(gameLocal.patchVer); // Only download patches that haven't been applied
 
-      // Function to process the patches one at a time
       const update = async () => {
         if (patchesToDownload.length > 0) {
-          const patch = patchesToDownload[0];
-          const patchZipPath = `${currentDir}\\${game.name}\\${patch.url
+          const patchUrl = patchesToDownload[0];
+          const patchIndex = gameLocal.patchVer + 1; // Track patch number being downloaded
+          const patchZipPath = `${currentDir}\\${game.name}\\${patchUrl
             .split("/")
             .pop()}`; // Naming the patch file
 
           showText(
             `.txt-status.${game.name}`,
-            `Downloading patch ${patch.index}`
+            `Downloading patch ${patchIndex}`
           );
 
           try {
@@ -162,19 +171,20 @@ module.exports = {
 
           startTime = Date.now();
           ipcRenderer.send("download", {
-            url: addCacheBustingSuffix(patch.url),
+            url: addCacheBustingSuffix(patchUrl),
             options: {
               directory: `${currentDir}\\${game.name}`,
-              filename: `${patch.url.split("/").pop()}`, // Correct filename based on patchUrl
+              filename: patchUrl.split("/").pop(), // Correct filename based on patchUrl
               step: "patch",
             },
           });
 
-          ipcRenderer.once(`download patch complete`, async () => {
+          ipcRenderer.once("download patch complete", async () => {
             showText(
               `.txt-status.${game.name}`,
-              `Extracting patch ${patch.index}`
+              `Extracting patch ${patchIndex}`
             );
+
             await extract7zFile(
               patchZipPath,
               `${currentDir}\\${game.name}`,
@@ -182,20 +192,21 @@ module.exports = {
                 showExtractProgress(game, progress);
               }
             ).then(async () => {
-              await fsPromises.unlink(patchZipPath); // Delete the patch file
+              await fsPromises.unlink(patchZipPath); // Delete the patch file after extraction
               showText(
                 `.txt-status.${game.name}`,
-                `Patch ${patch.index} applied`
+                `Patch ${patchIndex} applied`
               );
 
               // Update the patch version in config after applying the patch
               await updateConfigJson(
                 "games",
-                { name: game.name, patchVer: patch.index }, // Update to the current patch index
+                { name: game.name, patchVer: patchIndex }, // Update to the current patch index
                 configLocalPath
               );
 
-              patchesToDownload.splice(0, 1); // Remove the completed patch
+              patchesToDownload.shift(); // Remove the completed patch
+              gameLocal.patchVer = patchIndex; // Update local patch version
               update(); // Process the next patch
             });
           });
@@ -203,15 +214,19 @@ module.exports = {
           // Final update for the config with the latest patch version
           await updateConfigJson(
             "games",
-            { name: game.name, patchVer: game.patchVer }, // Final update after all patches
+            { name: game.name, patchVer: game.patchUrls.length }, // Final update after all patches
             configLocalPath
           );
           finish();
         }
       };
 
-      // Start the update process
-      update();
+      // Start the update process if there are patches to download
+      if (patchesToDownload.length > 0) {
+        update();
+      } else {
+        finish();
+      }
     };
 
     const finish = () => {
