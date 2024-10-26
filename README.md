@@ -20,7 +20,7 @@ The application downloads and extracts the latest game files or patches from hos
 
 **Note:** The diagram below is a simplified version of the application’s workflow.
 
-![app diagram](https://i.imgur.com/D9jaGkl.png)
+![app diagram](https://i.imgur.com/B57oFvg.png)
 
 ## Getting Started
 
