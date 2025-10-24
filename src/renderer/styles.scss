@@ -127,6 +127,7 @@ body {
             border-radius: 5px;
             height: 100%;
             width: 0%;
+            transition: width 0.3s ease-out;
           }
         }
       }
@@ -139,6 +140,7 @@ body {
         position: absolute;
         text-align: left;
         pointer-events: none;
+        transition: opacity 0.2s ease-in-out;
       }
 
       .txt {
@@ -166,6 +168,100 @@ body {
         }
       }
 
+      .language-selector {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        z-index: 2;
+
+        label {
+          color: #fff;
+          font-family: Arial, Helvetica, sans-serif;
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+         .language-dropdown {
+           position: relative;
+           min-width: 120px;
+
+           .language-dropdown-selected {
+             background-color: rgba(255, 255, 255, 0.9);
+             border: 1px solid #ccc;
+             padding: 8px 12px;
+             font-size: 14px;
+             font-family: Arial, Helvetica, sans-serif;
+             color: #333;
+             cursor: pointer;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+
+             &:hover {
+               border-color: #e6b822;
+             }
+
+             &.disabled {
+               background-color: rgba(200, 200, 200, 0.9);
+               color: #666;
+               cursor: not-allowed;
+               opacity: 0.6;
+
+               &:hover {
+                 border-color: #ccc;
+               }
+             }
+
+             .dropdown-arrow {
+               font-size: 10px;
+               transition: transform 0.2s;
+             }
+           }
+
+           .language-dropdown-options,
+           .voice-pack-dropdown-options {
+             position: absolute;
+             top: 100%;
+             left: 0;
+             right: 0;
+             background-color: #fff;
+             border: 1px solid #ccc;
+             border-top: none;
+             z-index: 10;
+             max-height: 200px;
+             overflow-y: auto;
+
+             .language-option {
+               padding: 8px 12px;
+               font-size: 14px;
+               font-family: Arial, Helvetica, sans-serif;
+               color: #333;
+               cursor: pointer;
+               text-align: left;
+               border-radius: 0;
+               border-bottom: 1px solid #eee;
+
+               &:last-child {
+                 border-bottom: none;
+               }
+
+               &:hover {
+                 background-color: #f0f0f0;
+               }
+
+               &.selected {
+                 background-color: #e6b822;
+                 color: #000;
+               }
+             }
+           }
+         }
+
+      }
+
       .btn-start {
         background-color: #e6b822;
         color: #000000;
@@ -190,5 +286,32 @@ body {
         }
       }
     }
+  }
+
+
+  // Voice pack dropdown positioning
+  .language-selector {
+    &.voice-pack {
+      right: 150px !important;
+    }
+  }
+
+  // Dropdown options (hidden by default)
+  .voice-pack-dropdown-options,
+  .language-dropdown-options {
+    display: none;
+  }
+
+  // Disabled button styles
+  .btn-start {
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Hidden button
+  .btn-start.hidden {
+    display: none;
   }
 }

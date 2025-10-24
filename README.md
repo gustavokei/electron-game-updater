@@ -11,8 +11,12 @@
 - Automatically updates game files and itself
 - 7zip integration
 - Custom game launch commands with parameters
-- Displays dynamic remaining time, progress, and download speed during updates
-- Reopens at the last selected game, so you don’t have to navigate to your most played game every time the launcher opens
+- Multi-language support (English, Portuguese, Taiwan Chinese)
+- Voice pack selection for games that support it
+- Per-game maintenance mode to disable individual games during updates
+- Smooth progress bars with exponential smoothing
+- Real-time download statistics (speed, time remaining, file size)
+- Per-game settings (language, voice pack) with persistent storage
 
 ## How It Works
 
@@ -49,6 +53,21 @@ Example of a JSON file:
       "patchUrls": [
         "https://your-server.com/game1-patch1.7z",
         "https://your-server.com/game1-patch2.7z"
+      ],
+      "maintenance": false,
+      "voicePacks": [
+        {
+          "value": "EN",
+          "label": "English"
+        },
+        {
+          "value": "PT",
+          "label": "Português"
+        },
+        {
+          "value": "KR",
+          "label": "한국어 음성"
+        }
       ]
     },
     {
@@ -56,7 +75,8 @@ Example of a JSON file:
       "startCmd": "start game2.exe paramA paramB",
       "clientVer": 1,
       "clientUrl": "https://your-server.com/game2-client.7z",
-      "patchUrls": []
+      "patchUrls": [],
+      "maintenance": true
     }
   ]
 }
@@ -73,6 +93,25 @@ Example of a JSON file:
     - To apply incremental updates, ensure that each new patch file is appended to `patchUrls` in the correct order. For example, if there are three patches available, `patchUrls` should contain links to `game1-patch1.7z`, `game1-patch2.7z`, and `game1-patch3.7z`.
     - If the array is empty, no patch will be applied.
 
+  - **maintenance**: (Optional) Set to `true` to put a specific game in maintenance mode, disabling only that game.
+
+  - **voicePacks**: (Optional) Array of voice pack options for the game. Each voice pack should have:
+    - **value**: The code used in the game's launch command (e.g., "EN", "PT", "KR")
+    - **label**: The display name shown in the UI (e.g., "English", "Português", "한국어 음성")
+
+### Language and Voice Pack Support
+
+The launcher supports dynamic language and voice pack selection:
+
+- **Language Selection**: Users can choose between English, Portuguese, and Taiwan Chinese
+- **Voice Pack Selection**: Games can offer multiple voice pack options (only shown if `voicePacks` array is present)
+- **EGULANG Parameter**: The launcher automatically replaces `EGULANG` placeholder in `startCmd` with the combined language and voice pack parameter:
+  - Language only: `"EN"` (when no voice pack is selected)
+  - Language + Voice Pack: `"EN_KR"` (when voice pack is selected)
+  - Example: `"start game.exe EGULANG"` becomes `"start game.exe EN_KR"`
+- **Per-Game Settings**: Each game remembers its own language and voice pack selection
+- **UI Translation**: The launcher UI automatically translates based on the selected language
+
 
 #### 2: Clone This Repository
 ```bash
@@ -80,13 +119,13 @@ git clone https://github.com/gustavokei/electron-game-updater.git
 ```
 
 #### 3: Configure the Launcher
-Edit the `defaultConfig` object in `src/renderer/utils/getConfigFileLocal.js` to point to your hosted JSON file:
+Edit the `defaultConfig` object in `src/constants/index.js` to point to your hosted JSON file:
 
 ```js
-const defaultConfig = {
+export const DEFAULT_CONFIG = {
   updaterUrl: "https://your-server.com/your-json-file.json", // Your JSON URL goes here
   launcherVer: 1,
-  lastSelectedGame: "",
+  selectedGame: "",
   games: [],
 };
 ```
@@ -95,14 +134,22 @@ Images and icons are located in `src/renderer/assets`. Customize these assets to
 
 Adjust the `background-image` properties of `.game-icon` and `.game-patcher` in `src/renderer/styles.scss` to use the same `game.name` property from your JSON configuration.
 
-#### 5: Install Dependencies
+#### 5: Customize Languages and Translations
+The launcher supports multiple languages. Edit the translation files in `src/locales/`:
+- `en.json` - English translations
+- `pt.json` - Portuguese translations  
+- `tw.json` - Taiwan Chinese translations
+
+Add new languages by creating additional JSON files and updating `src/utils/i18n.js`.
+
+#### 6: Install Dependencies
 Navigate to the project's root directory and run:
 
 ```bash
 npm install
 ```
 
-#### 6: Build the Application
+#### 7: Build the Application
 To create the executable:
 
 ```bash
