@@ -1,4 +1,12 @@
-const handleVoicePackChange = (voicePack, setSelectedVoicePack, selectedGame, configLocalPath) => {
+const { isValidVoicePackForLanguage } = require('./filterVoicePackOptions');
+
+const handleVoicePackChange = (voicePack, setSelectedVoicePack, selectedGame, configLocalPath, selectedLanguage) => {
+  // Validate the voice pack selection
+  if (!isValidVoicePackForLanguage(voicePack, selectedLanguage)) {
+    console.warn(`Invalid voice pack ${voicePack} for language ${selectedLanguage}, resetting to default`);
+    voicePack = ''; // Reset to default
+  }
+  
   setSelectedVoicePack(voicePack);
   
   // Save voice pack selection per game

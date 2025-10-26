@@ -1,6 +1,6 @@
 // Default configuration object
 export const DEFAULT_CONFIG = {
-    updaterUrl: "https://your-launcher-url.com/launcher-config.json",
+    updaterUrl: "https://updater.devgames.app/",
     launcherVer: 1,
     selectedGame: "",
     selectedLanguage: "",
@@ -41,6 +41,13 @@ export const CONFIG = {
   DEFAULT_LANGUAGE: LANGUAGES.EN,
   DEFAULT_VOICE_PACK: '',
   DEFAULT_LOCALE: 'en'
+};
+
+// Launcher constants
+export const LAUNCHER = {
+  EXECUTABLE_NAME: 'launcher.exe',
+  UPDATE_BATCH_FILE: 'launcher-update.bat',
+  NEW_SUFFIX: '.new'
 };
 
 // Game parameter constants

@@ -11,6 +11,7 @@ import { setupGames } from "./utils/setupGames";
 import { handleGameClick } from "./utils/handleGameClick";
 import { handleLanguageChange } from "./utils/handleLanguageChange";
 import { handleVoicePackChange } from "./utils/handleVoicePackChange";
+import { filterVoicePackOptions, isValidVoicePackForLanguage } from "./utils/filterVoicePackOptions";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 const MainWindow = () => {
@@ -113,6 +114,28 @@ const MainWindow = () => {
       setCurrentLocale(newLocale);
       setLocale(newLocale);
       
+      // Check if current voice pack is valid for the new language
+      if (!isValidVoicePackForLanguage(selectedVoicePack, selectedLanguage)) {
+        console.warn(`Current voice pack ${selectedVoicePack} is invalid for language ${selectedLanguage}, resetting to default`);
+        setSelectedVoicePack(CONFIG.DEFAULT_VOICE_PACK);
+        
+        // Update the config file to reflect the change
+        if (selectedGame && configLocal) {
+          try {
+            const fs = require('fs');
+            const data = fs.readFileSync(configLocalPath, 'utf8');
+            const config = JSON.parse(data);
+            const gameIndex = config.games.findIndex(game => game.name === selectedGame);
+            if (gameIndex !== -1) {
+              config.games[gameIndex].selectedVoicePack = CONFIG.DEFAULT_VOICE_PACK;
+              fs.writeFileSync(configLocalPath, JSON.stringify(config, null, 4), 'utf8');
+            }
+          } catch (error) {
+            console.warn("Failed to update voice pack in config:", error);
+          }
+        }
+      }
+      
       // Refresh all UI text when language changes
       refreshUIText();
     }
@@ -170,7 +193,7 @@ const MainWindow = () => {
   };
 
   const handleVoicePackChangeAsync = (voicePack) => {
-    handleVoicePackChange(voicePack, setSelectedVoicePack, selectedGame, configLocalPath);
+    handleVoicePackChange(voicePack, setSelectedVoicePack, selectedGame, configLocalPath, selectedLanguage);
   };
 
   return (
@@ -231,7 +254,7 @@ const MainWindow = () => {
                     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                   }}>
                     {selectedVoicePack ? 
-                      (game.voicePacks?.find(vp => vp.value === selectedVoicePack)?.label || selectedVoicePack) : 
+                      (filterVoicePackOptions(game.voicePacks, selectedLanguage)?.find(vp => vp.value === selectedVoicePack)?.label || selectedVoicePack) : 
                       getMessages(currentLocale).default
                     }
                     <span className="dropdown-arrow">▼</span>
@@ -246,7 +269,7 @@ const MainWindow = () => {
                     >
                       {getMessages(currentLocale).default}
                     </div>
-                    {game.voicePacks.map((voicePack) => (
+                    {filterVoicePackOptions(game.voicePacks, selectedLanguage).map((voicePack) => (
                       <div
                         key={voicePack.value}
                         className={`language-option ${selectedVoicePack === voicePack.value ? 'selected' : ''}`}

@@ -4,6 +4,7 @@ const { addCacheBustingSuffix } = require("./utils/addCacheBustingSuffix");
 const { showText } = require("./utils/showText");
 const { updateConfigJson } = require("./utils/updateConfigJson");
 const { getFileNameFromUrl } = require("./utils/getFileNameFromUrl");
+const { CONFIG, LAUNCHER } = require("../constants");
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 module.exports = {
@@ -11,12 +12,12 @@ module.exports = {
     const fs = require("fs");
     const currentDir = ipcRenderer.sendSync("get-file-path", "");
     const configLocalPath = isDevelopment
-      ? "launcher-config.json"
-      : `${currentDir}\\launcher-config.json`;
+      ? CONFIG.FILE_NAME
+      : `${currentDir}\\${CONFIG.FILE_NAME}`;
 
-    const launcherNew = `${getFileNameFromUrl(configRemote?.launcherUrl)}.new`;
+    const launcherNew = `${getFileNameFromUrl(configRemote?.launcherUrl)}${LAUNCHER.NEW_SUFFIX}`;
     const launcherNewPath = `${currentDir}\\${launcherNew}`;
-    const replaceScriptPath = `${currentDir}\\launcher-update.bat`;
+    const replaceScriptPath = `${currentDir}\\${LAUNCHER.UPDATE_BATCH_FILE}`;
 
     const updateLauncher = () => {
       return new Promise((resolve, reject) => {
@@ -66,15 +67,15 @@ module.exports = {
       @echo off
       setlocal
       set currentDir=%~dp0
-      set launcherExe=%currentDir%launcher.exe
+      set launcherExe=%currentDir%${LAUNCHER.EXECUTABLE_NAME}
       set newLauncher=%currentDir%${launcherNew}
     
       :: Kill the running launcher
-      taskkill /IM launcher.exe /F >nul 2>&1
+      taskkill /IM ${LAUNCHER.EXECUTABLE_NAME} /F >nul 2>&1
     
       :: Wait for the launcher to close
       :waitLoop
-      tasklist /FI "IMAGENAME eq launcher.exe" 2>NUL | find /I "launcher.exe" >NUL
+      tasklist /FI "IMAGENAME eq ${LAUNCHER.EXECUTABLE_NAME}" 2>NUL | find /I "${LAUNCHER.EXECUTABLE_NAME}" >NUL
       if not errorlevel 1 (
           timeout /T 1 /NOBREAK >NUL
           goto waitLoop
@@ -83,8 +84,8 @@ module.exports = {
       :: Delete the old launcher executable
       del /F /Q "%launcherExe%" >nul 2>&1
     
-      :: Rename the new launcher to launcher.exe
-      ren "%newLauncher%" "launcher.exe"
+      :: Rename the new launcher to ${LAUNCHER.EXECUTABLE_NAME}
+      ren "%newLauncher%" "${LAUNCHER.EXECUTABLE_NAME}"
     
       :: Start the new launcher
       start "" "%launcherExe%" >nul 2>&1
