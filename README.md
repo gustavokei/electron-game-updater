@@ -1,6 +1,6 @@
 # Electron Game Updater
 
-![app image](https://i.imgur.com/8uKTodS.gif)
+![app image](https://i.imgur.com/s46N0y2.gif)
 
 **Electron Game Updater** is an application built with Electron and React, designed to simplify the process of installing and updating games on Windows. This application features support for multiple games, automatic updates, and seamless patching through compressed files.
 
