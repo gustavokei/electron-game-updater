@@ -1,6 +1,6 @@
 // Default configuration object
 export const DEFAULT_CONFIG = {
-    updaterUrl: "https://updater.devgames.app/",
+    updaterUrl: "https://your-server.com/your-json-file.json",
     launcherVer: 1,
     selectedGame: "",
     selectedLanguage: "",
